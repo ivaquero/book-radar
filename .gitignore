@@ -76,4 +76,4 @@ octave-workspace
 
 lib/*.pdf
 # *.pdf
-*.html
+widgets

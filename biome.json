@@ -1,0 +1,10 @@
+{
+    "files": {
+        "ignoreUnknown": true
+    },
+    "linter": {
+        "ignore": [
+            "katex/*.js"
+        ]
+    }
+}
