@@ -1,7 +1,7 @@
 * {
     margin: 0;
     border: 0;
-    font-family: -apple-system, "Kaiti SC", "Helvetica Neue";
+    font-family: "Kaiti SC";
     -webkit-text-size-adjust: none !important;
 }
 
@@ -133,6 +133,10 @@ p {
 #button_set > button:active {
     background-color: #ffea706b;
     outline: none;
+}
+
+#equation {
+    font-family: "Helvetica"
 }
 
 .intro {
