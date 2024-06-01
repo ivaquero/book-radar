@@ -73,6 +73,7 @@ octave-workspace
 
 ##########
 # extra
+
 lib/*.pdf
 # *.pdf
 *.html
