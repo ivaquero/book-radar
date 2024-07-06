@@ -1,4 +1,4 @@
-#import "lib/sci-book.typ": *
+#import "lib/scibook.typ": *
 #show: doc => conf(
   title: "波束形成",
   author: ("数字技术研发中心"),

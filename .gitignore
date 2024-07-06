@@ -73,7 +73,5 @@ octave-workspace
 
 ##########
 # extra
-
-lib/*.pdf
-# *.pdf
+lib
 widgets

@@ -1,4 +1,4 @@
-#import "lib/sci-book.typ": *
+#import "lib/scibook.typ": *
 #show: doc => conf(
   title: "信号处理",
   author: ("数字技术研发中心"),
