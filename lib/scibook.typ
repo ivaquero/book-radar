@@ -82,13 +82,20 @@
   show heading: i-figured.reset-counters.with(level: 2)
   show math.equation: i-figured.show-equation
 
-  set figure.caption(separator: none)
+  set figure.caption(separator: "  ")
 
   show figure: it => align(
     center,
     block(breakable: figure-break)[
       #it.body#h(0.35em)#it.caption
     ],
+  )
+
+  show raw.where(block: true): block.with(
+    fill: luma(240),
+    inset: .8em,
+    radius: 5pt,
+    width: 100%,
   )
 
   align(
@@ -107,19 +114,22 @@
     #pagebreak()
   ]
 
+  show link: underline
   show: thmrules
   show: fix-indent()
   doc
 }
 
 // tables
-#let frame(stroke) = (x, y) => (
-  top: if y < 2 {
-    stroke
-  } else {
-    0pt
-  },
-  bottom: stroke,
+#let frame(stroke) = (
+  (x, y) => (
+    top: if y < 2 {
+      stroke
+    } else {
+      0pt
+    },
+    bottom: stroke,
+  )
 )
 
 #let ktable(data, k, inset: 0.3em) = table(
@@ -132,8 +142,8 @@
 
 // functions
 #let code(text, lang: "python", breakable: false, width: 100%) = block(
-  fill: rgb("#f3f3f3"),
-  stroke: rgb("#dbdbdb"),
+  fill: rgb("#F3F3F3"),
+  stroke: rgb("#DBDBDB"),
   inset: (x: .8em, y: .6em),
   radius: 5pt,
   spacing: 2em,
@@ -152,6 +162,7 @@
   "theo": "定理",
   "lem": "引理",
   "coro": "推论",
+  "rule": "法则",
   "algo": "算法",
   "tip": "提示",
   "alert": "注意",
@@ -163,7 +174,7 @@
   base_level: 1,
   separator: [#h(0.5em)],
   padding: (top: 0em, bottom: 0em),
-  fill: rgb("#ffffff"),
+  fill: rgb("#FFFFFF"),
   // stroke: rgb("#000000"),
   inset: (left: 0em, right: 0.5em, top: 0.2em, bottom: 0.2em)
 )
@@ -174,7 +185,7 @@
   base_level: 1,
   separator: [#h(0.5em)],
   padding: (top: 0em, bottom: 0.2em),
-  fill: rgb("#e5eefc"),
+  fill: rgb("#E5EEFC"),
   // stroke: rgb("#000000")
 )
 
@@ -182,11 +193,11 @@
   "theorem",
   terms.lem,
   separator: [#h(0.5em)],
-  fill: rgb("#efe6ff"),
+  fill: rgb("#EFE6FF"),
   titlefmt: strong,
 )
 
-#let corollary = thmplain(
+#let corollary = thmbox(
   "corollary",
   terms.coro,
   base: "theorem",
@@ -194,10 +205,19 @@
   titlefmt: strong,
 )
 
+#let rule = thmbox(
+  "",
+  terms.rule,
+  base_level: 1,
+  separator: [#h(0.5em)],
+  fill: rgb("#EEFFF1"),
+  titlefmt: strong,
+)
+
 #let tip = thmbox(
  "",
  none,
- fill: rgb("#fffee6"),
+ fill: rgb("#FFFEE6"),
  radius: 0.5em,
  padding: (top: 0em, bottom: 0em),
  separator: [],
@@ -207,7 +227,7 @@
 #let algo = thmbox(
  "",
  terms.algo,
- fill: rgb("#faf2fb"),
+ fill: rgb("#FAF2FB"),
  radius: 0em,
  padding: (top: 0em, bottom: 0em),
  separator: [],
