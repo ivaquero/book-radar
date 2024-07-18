@@ -24,7 +24,7 @@
   - [ctheorems](https://github.com/sahasatvik/typst-theorems)
   - [phyisca](https://github.com/leedehai/typst-physics)
   - [fletcher](https://github.com/Jollywatt/typst-fletcher)
-  - [hydra](https://github.com/tingerrr/hydra): v0.4.0
+  - [hydra](https://github.com/tingerrr/hydra)
   - [gentle-clues](https://github.com/jomaway/typst-gentle-clues)
   - [indenta](https://github.com/flaribbit/indenta)
 
