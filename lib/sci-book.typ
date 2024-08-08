@@ -1,7 +1,7 @@
 // indent
 #import "@preview/indenta:0.0.3": fix-indent
 // header-footer
-#import "@preview/hydra:0.5.0": *
+#import "@preview/hydra:0.5.1": *
 // physics
 #import "@preview/physica:0.9.2": *
 // theorems
