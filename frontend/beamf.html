@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<head>
+    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+        type="text/javascript"></script>
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            tex2jax: {
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+            inlineMath: [['$','$']]
+            }
+        });
+    </script>
+    <link rel="stylesheet" href="beamf.css">
+    <meta charset="utf-8" />
+    <title>波束形成</title>
+</head>
+
+<body>
+    <div id="container">
+        <div id="boxViewWrap">
+            <h2>波束形成 - 阵列因子（dB）</h2>
+            <div id="displayDiv" class="display">
+                <svg id="display" xmlns="http://www.w3.org/2000/svg">
+                </svg>
+            </div>
+            <div id="inputDiv" class="control">
+                <div id="input_left">
+                    <div>d<sub>Ant</sub> / λ<sub>0</sub> : </div>
+                    <div>N<sub>Ant</sub> : </div>
+                    <div>ω<sub>0</sub> ΔT : </div>
+                </div>
+                <div id="input_middle">
+                    <div class="tooltip">
+                        <span class="tooltiptext" id="tip_dLambdaRatio">0.25</span>
+                        <input type="range" id="slider_dLambdaRatio" min="0.01" max="1.5" step="0.01"
+                            value="0.25" /><br />
+                    </div>
+                    <div class="tooltip">
+                        <span class="tooltiptext" id="tip_nAnt">4</span>
+                        <input type="range" id="slider_nAnt" min="1" max="16" step="1" value="4" /><br />
+                    </div>
+                    <div class="tooltip">
+                        <span class="tooltiptext" id="tip_deltaT">0</span>
+                        <input type="range" id="slider_deltaT" min="-180" max="180" step="1" value="0" /><br />
+                    </div>
+                </div>
+                <div id="input_right">
+                    <span id="value_dLambdaRatio"></span><br />
+                    <span id="value_nAnt"></span><br />
+                    <span id="value_deltaT"></span><br />
+                </div>
+                <div id="button_set">
+                    <button id="hide_deltaT_btn">隐藏 ΔT</button>
+                    <button id="hide_nAnt_btn">隐藏 N<sub>Ant</sub></button>
+                    <button id="reset_deltaT_btn">重置 ΔT</button>
+                    <button id="reset_all_btn">重置全部</button>
+                </div>
+            </div>
+            <div id="graphDiv" class="intro">
+                <h3>波束形成</h3>
+                <table>
+                    <tr>
+                        <th>符号</th>
+                        <th>简写</th>
+                        <th>含义</th>
+                        <th>备注</th>
+                    </tr>
+                    <tr>
+                        <td><b>N<sub>Ant</sub></b></td>
+                        <td>N</td>
+                        <td>天线数量</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><b>d<sub>Ant</sub></b></td>
+                        <td>d</td>
+                        <td>临近天线距离</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><b>c<sub>0</sub></b></td>
+                        <td>c</td>
+                        <td>光速</td>
+                        <td>≈ 3x10<sup>8</sup> m/s</td>
+                    </tr>
+                    <tr>
+                        <td><b>λ<sub></sub>0</sub></b></td>
+                        <td>λ</td>
+                        <td>电磁波波长</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><b>ω<sub>0</sub></b></td>
+                        <td>ω</td>
+                        <td>电磁波角速度</td>
+                        <td>2πc<sub>0</sub> /
+                            λ<sub>0</sub></td>
+                    </tr>
+                    <tr>
+                        <td><b>ΔT</b></td>
+                        <td></td>
+                        <td>延迟</td>
+                        <td>亦可能为负值</td>
+                    </tr>
+                    <tr>
+                        <td><b>ω<sub>0</sub> ΔT</b></td>
+                        <td></td>
+                        <td>波束图控制相</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><b>θ</b></td>
+                        <td></td>
+                        <td>天线法向量夹角</td>
+                        <td>-180°～+180°</td>
+                    </tr>
+                </table>
+                <div id="equationDiv" class="intro">
+                    <h3>计算步骤</h3>
+                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+                    <script defer
+                        src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js,https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+                        async="async"></script>
+                    <script defer src="formulae.js"></script>
+                    <div id="equation">
+                        $$Δτ = \frac{dA_{\mathrm{Ant}}\sin(θ)}{c_0}$$
+                        $$Δψ = ω_0 Δτ = 2π \frac{c_0}{λ_0}⋅\frac{d_{\mathrm{Ant}} \sin
+                        (θ)}{c_0} = 2π \frac{d_{\mathrm{Ant}} \sin(θ)}{λ_0}$$
+                        $$ΔΨ = Δψ-ω_0 ΔT = 2π \frac{d_{\mathrm{Ant}} \sin
+                        (θ)}{λ_0}-ω_0 ΔT$$
+                        $$θ_{\mathrm{MainLobe}} = θ|_{ΔΨ=0} = \arcsin\big(\frac{ω_0
+                        ΔT⋅λ_0}{2π⋅d_{\mathrm{Ant}}}\big)$$
+                        $$\begin{aligned} &x_n(t) ≈ x_0\big(t - n\frac{ΔΨ}{ω_0}\big) \\ &
+                        → X_n(ω) ≈ X_0(ω) e^{-j n ΔΨ}\end{aligned}$$
+                        $$\begin{aligned} &y(t) ≈ ∑_{n=0}^{N_{\mathrm{Ant}}-1} x_n(t) = ∑_{n=0}^{N_{\mathrm{Ant
+                        }}-1} x_0 \big(t-n \frac{ΔΨ}{ω_0}\big) \\ &→ Y(ω) ≈
+                        ∑_{n=0}^{N_{\mathrm{Ant}}-1} X_n(ω) = X_0(ω) ∑_{n=0}^{N_{\mathrm{Ant}}-1} e^{-j n
+                        ΔΨ}\end{aligned}$$
+                        $$\begin{aligned} & \mathrm{ArrayFactor}(θ) = \frac{Y(ω)}{X_0(ω)} ≈
+                        ∑_{n=0}^{N_{\mathrm{Ant}}-1} e^{-j n Δ Ψ} \\ &
+                        \mathrm{ArrayFactor}_{\mathrm{dB}}(θ) = 10\lg\big|\mathrm{ArrayFactor}(θ)\big|^2\end{aligned}$$
+                    </div>
+                    <h4 align="right">SZZX &nbsp</h4>
+                </div>
+            </div>
+        </div>
+</body>
+<script src="beamf.js"></script>
+
+</html>
