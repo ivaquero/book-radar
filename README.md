@@ -11,7 +11,7 @@
 - 弹道外推
 - 数据融合
 
-> 生成的 PDF 在 articles 文件夹。
+> 使用 radar.typ 生成 PDF 文件。
 
 ## 文档编译
 
