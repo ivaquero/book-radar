@@ -1,7 +1,7 @@
 #import "@local/scibook:0.1.0": *
 #show: doc => conf(
   title: "信号处理",
-  author: ("SZZX"),
+  author: "SZZX",
   footer-cap: "SZZX",
   header-cap: "雷达基础知识手册",
   outline-on: false,
