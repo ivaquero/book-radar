@@ -57,6 +57,10 @@ codegen/
 # Local History for Visual Studio Code
 .history/
 
+######################
+# Python
+__pycache__/
+
 ##########
 # Extra
 articles

@@ -8,9 +8,10 @@ app = marimo.App(width="medium")
 def _():
     import matplotlib.pyplot as plt
     import numpy as np
+    from matplotlib import patches
+    from scipy import integrate
     from scipy import signal
-
-    return np, plt, signal
+    return integrate, np, patches, plt, signal
 
 
 @app.cell
@@ -266,9 +267,57 @@ def _(gain_est, np, phase_est, selFreq_h, selPhase):
 
 
 @app.cell
+def _(integrate, np, patches, plt):
+    # Generate velocity data
+    vel = np.hstack(
+        (
+            np.arange(10) ** 2,
+            np.ones(4) * 9**2,
+            np.arange(9, 4, -1) ** 2,
+            np.ones(3) * 5**2,
+            np.arange(5, 0, -1) ** 2,
+        )
+    )
+    time = np.arange(len(vel))
+
+
+    ## Plot the data
+    fig, axs2 = plt.subplots(3, 1, sharex=True)
+
+    axs2[0].plot(time, vel, "*-")
+    for ii in range(len(vel) - 1):
+        ## Corresponding trapezoid corners
+        x = [time[ii], time[ii], time[ii + 1], time[ii + 1]]
+        y = [0, vel[ii], vel[ii], 0]
+        data_stack = np.column_stack((x, y))
+        axs2[0].add_patch(patches.Polygon(data_stack, alpha=0.1))
+        axs2[0].add_patch(patches.Polygon(data_stack, fill=False))
+    axs2[0].set(ylabel="Velocity [m/s]")
+
+
+    axs2[1].plot(time, vel, "*-")
+    for ii in range(len(vel) - 1):
+        ## Corresponding trapezoid corners
+        x = [time[ii], time[ii], time[ii + 1], time[ii + 1]]
+        y = [0, vel[ii], vel[ii + 1], 0]
+        data_stack2 = np.column_stack((x, y))
+        axs2[1].add_patch(patches.Polygon(data_stack2))
+        axs2[1].add_patch(patches.Polygon(data_stack2, fill=False))
+    axs2[1].set(ylabel="Velocity [m/s]")
+    # p = patch(xverts, yverts, "b", "LineWidth", 1.5)
+
+    axs2[2].plot(time, np.hstack([0, integrate.cumulative_trapezoid(vel)]))
+    axs2[2].set(xlabel="Time [s]", ylabel="Distance [m]", xlim=[0, len(vel) - 1])
+
+    # Save and show the image
+    # plt.savefig("../images/filter-integ.jpg")
+    plt.show()
+    return axs2, data_stack, data_stack2, fig, ii, time, vel, x, y
+
+
+@app.cell
 def _():
     import marimo as mo
-
     return (mo,)
 
 
