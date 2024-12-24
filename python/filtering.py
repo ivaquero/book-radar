@@ -9,6 +9,7 @@ def _():
     import matplotlib.pyplot as plt
     import numpy as np
     from scipy import signal
+
     return np, plt, signal
 
 
@@ -44,6 +45,9 @@ def _(np, plt, signal):
     ax.plot(tt, data["after_iir"], ".:", label="IIR-filtered", lw=2)
     ax.set(xlabel="Timesteps", ylabel="Signal", xticks=np.arange(0, 20, 2))
     ax.legend()
+
+    # plt.savefig("../images/filter-fir-iir.png")
+    plt.show()
     return ax, data, tt, xx
 
 
@@ -73,6 +77,8 @@ def _(np, plt, signal):
     ax1.plot(x_med, label="median")
     ax1.set(xlim=[0, 19], xticks=np.arange(0, 20, 2))
     ax1.legend()
+    # plt.savefig("../images/filter-morph.png")
+    plt.show()
     return ax1, b, x1, x_filt, x_med
 
 
@@ -111,7 +117,7 @@ def _(aa, bb, np, plt, signal):
     _, axs = plt.subplots(2, 1, sharex=True)
 
     for x_, xlabel, ax_ in zip(xs, xlabels, axs.flatten()):
-        # ... and find the impulse-response
+        # Find the impulse-response
         y_ = signal.lfilter(bb, aa, x_)
 
         # Plot input and response
@@ -122,6 +128,7 @@ def _(aa, bb, np, plt, signal):
         ax_.tick_params(axis="x", labelbottom=False)
 
     axs[1].set(xlabel="n * T")
+    # plt.savefig("../images/filter-response.png")
     plt.show()
     return ax_, axs, xImpulse, xStep, x_, xlabel, xlabels, xs, y_
 
@@ -136,21 +143,30 @@ def _(mo):
 def _(aa, bb, np, plt, signal):
     ## Frequency Response
     w, h = signal.freqz(bb, aa, fs=2)  # Calculate the normalized values
+    dB = 20 * np.log10(np.abs(h))
+    phase = np.rad2deg(np.arctan2(h.imag, h.real))
     # Plot them, in a new figure
-    _, axfs = plt.subplots(2, 1, sharex=True)
+    _, axfs = plt.subplots(2, 1, figsize=(8, 4), sharex=True)
 
-    axfs[0].plot(w, 20 * np.log10(np.abs(h)))
-    axfs[0].set(ylabel="Magnitude [dB]", title="Frequency Response", ylim=[-40, 0])
+    axfs[0].plot(w, dB)
+    axfs[0].set(
+        xlabel=r"Normalized Frequency (xπ rad/sample)",
+        ylabel="Magnitude [dB]",
+        title="Frequency Response",
+        ylim=[-40, 0],
+    )
     axfs[0].grid(1)
-    axfs[1].plot(w, np.rad2deg(np.arctan2(h.imag, h.real)))
+    axfs[1].plot(w, phase)
     axfs[1].set(
         xlabel=r"Normalized Frequency (xπ rad/sample)",
         ylabel="Phase [deg]",
+        ylim=[-120, 100],
         xlim=[0, 1],
     )
     axfs[1].grid(1)
 
-    selFreq_val = 0.22  # Select a frequency point in the normalized response
+    # Select a frequency point in the normalized response
+    selFreq_val = 0.22
     selFreq_nr = np.argmin(np.abs(w - selFreq_val))
     selFreq_w = w[selFreq_nr]  # Value on plot
 
@@ -162,9 +178,13 @@ def _(aa, bb, np, plt, signal):
     selPhase = np.rad2deg(np.arctan2(selFreq_h.imag, selFreq_h.real))
     axfs[0].plot(selFreq_w, seldB, "b*")
     axfs[1].plot(selFreq_w, selPhase, "b*")
+    # plt.savefig("../images/filter-response-freq.png")
+    plt.show()
     return (
         axfs,
+        dB,
         h,
+        phase,
         selFreq_h,
         selFreq_nr,
         selFreq_val,
@@ -192,7 +212,7 @@ def _(aa, bb, np, plt, selFreq_w, signal):
     ax2.plot(t, sin_out, label="Output")
 
     ax2.set(
-        title=f"Input and Response for {freq:4.1f} Hz, sampled at {rate}  Hz",
+        title=f"Input and Response for {freq:4.1f} Hz, sampled at {rate} Hz",
         xlabel="Time [s]",
         ylabel="Signal",
     )
@@ -216,7 +236,8 @@ def _(aa, bb, np, plt, selFreq_w, signal):
     # Plot them
     ax2.plot(tMaxIn, secondMaxIn, "b*")
     ax2.plot(tMaxOut, secondMaxFiltered, "r*")
-    # plt.show()
+    # plt.savefig("../images/filter-response-nyq.png")
+    plt.show()
     return (
         ax2,
         freq,
@@ -237,17 +258,17 @@ def _(aa, bb, np, plt, selFreq_w, signal):
 
 
 @app.cell
-def _(gain_est, np, phase_est, selFreq_h):
-    gain = np.abs(selFreq_h)
-    phase = np.rad2deg(np.arctan2(selFreq_h.imag, selFreq_h.real))
-    print(f"Correct gain and phase: {gain:4.2f}, and {phase:5.1f} deg")
+def _(gain_est, np, phase_est, selFreq_h, selPhase):
+    selGain = np.abs(selFreq_h)
+    print(f"Correct gain and phase: {selGain:4.2f}, and {selPhase:5.1f} deg")
     print(f"Numerical estimation: {gain_est:4.2f}, and {phase_est:5.1f} deg")
-    return gain, phase
+    return (selGain,)
 
 
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
