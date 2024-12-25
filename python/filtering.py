@@ -9,9 +9,9 @@ def _():
     import matplotlib.pyplot as plt
     import numpy as np
     from matplotlib import patches
-    from scipy import integrate
-    from scipy import signal
-    return integrate, np, patches, plt, signal
+    from scipy import integrate, signal, interpolate, stats
+    from statsmodels.nonparametric.smoothers_lowess import lowess
+    return integrate, interpolate, lowess, np, patches, plt, signal, stats
 
 
 @app.cell
@@ -267,6 +267,12 @@ def _(gain_est, np, phase_est, selFreq_h, selPhase):
 
 
 @app.cell
+def _(mo):
+    mo.md(r"""## Smoothing of Regularly Sampled Data""")
+    return
+
+
+@app.cell
 def _(integrate, np, patches, plt):
     # Generate velocity data
     vel = np.hstack(
@@ -280,7 +286,6 @@ def _(integrate, np, patches, plt):
     )
     time = np.arange(len(vel))
 
-
     ## Plot the data
     fig, axs2 = plt.subplots(3, 1, sharex=True)
 
@@ -293,7 +298,6 @@ def _(integrate, np, patches, plt):
         axs2[0].add_patch(patches.Polygon(data_stack, alpha=0.1))
         axs2[0].add_patch(patches.Polygon(data_stack, fill=False))
     axs2[0].set(ylabel="Velocity [m/s]")
-
 
     axs2[1].plot(time, vel, "*-")
     for ii in range(len(vel) - 1):
@@ -313,6 +317,261 @@ def _(integrate, np, patches, plt):
     # plt.savefig("../images/filter-integ.jpg")
     plt.show()
     return axs2, data_stack, data_stack2, fig, ii, time, vel, x, y
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""## Smoothing of Irregularly Sampled Data""")
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""### Lowess and Loess Smoothing""")
+    return
+
+
+@app.cell
+def _(lowess, np, plt):
+    np.random.seed(1234)
+
+    # Generate some data
+    x_sm = np.arange(0, 10, 0.1)
+    y_sm = np.sin(x_sm) + 0.2 * np.random.randn(len(x_sm))
+
+    # Eliminate some, so that we don't have equal sampling distances
+    cur_ind = np.where((x_sm > 5) & (x_sm < 6))
+    x_space = np.delete(x_sm, cur_ind)
+    y_space = np.delete(y_sm, cur_ind)
+
+    # Smooth the data with Lowess, from the package "statsmodels"
+    smoothed = lowess(y_space, x_space, frac=0.1)
+    idx_low, data_low = smoothed.T
+
+    _, ax3 = plt.subplots(figsize=(8, 4))
+    ax3.plot(x_space, y_space, ".", label="rawdata")
+    ax3.plot(idx_low, data_low, label="lowess")
+    ax3.legend()
+    return (
+        ax3,
+        cur_ind,
+        data_low,
+        idx_low,
+        smoothed,
+        x_sm,
+        x_space,
+        y_sm,
+        y_space,
+    )
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""## Splines""")
+    return
+
+
+@app.cell
+def _(np, plt):
+    dt_sp = 0.01  # step interval for plotting
+    t_sp = np.arange(0, 1, dt_sp)
+
+    # Generate the B-splines, through convolution
+    ones = np.ones(len(t_sp))
+    Bsplines = [ones]
+    for _ in range(3):
+        Bsplines.append(np.convolve(Bsplines[-1], ones))
+        # Normalize the integral to "1"
+        Bsplines[-1] /= np.sum(Bsplines[-1]) * dt_sp
+
+    # Plot the Bsplines
+    _, ax_sp = plt.subplots(figsize=(8, 4))
+    for spline in Bsplines:
+        ax_sp.plot(np.arange(len(spline)) * dt_sp, spline)
+
+    # Put on labels
+    ax_sp.text(0.5, 1, "$b^0$", color="C0")
+    for i_sp in range(1, 4):
+        spline = Bsplines[i_sp]
+        loc_max = np.argmax(spline) * dt_sp
+        val_max = np.max(spline)
+        txt = f"$b^{i_sp}$"
+        color = f"C{i_sp}"
+        ax_sp.text(loc_max, val_max, txt, color=color)
+
+    # Format the plot
+    ax_sp.set(xlim=(0, 4), ylim=(0, 1.1), xticks=(np.arange(5)))
+    plt.savefig("../images/filter-spline-b.png")
+
+    plt.show()
+    return (
+        Bsplines,
+        ax_sp,
+        color,
+        dt_sp,
+        i_sp,
+        loc_max,
+        ones,
+        spline,
+        t_sp,
+        txt,
+        val_max,
+    )
+
+
+@app.cell
+def _(interpolate, np):
+    def scipy_bspline(
+        cv, n: int = 100, degree: int = 3, periodic: bool = False
+    ) -> np.ndarray:
+        """Calculate n samples on a bspline
+
+        Parameters
+        ----------
+        cv :  Array of control vertices
+        n  :  Number of samples to return
+        degree :  Curve degree
+        periodic : True - Curve is closed
+
+        Returns
+        -------
+        spline_data : x/y-values of the spline-curve
+        """
+
+        cv = np.asarray(cv)
+        count = cv.shape[0]
+
+        # Closed curve
+        if periodic:
+            kv = np.arange(-degree, count + degree + 1)
+            factor, fraction = divmod(count + degree + 1, count)
+            cv = np.roll(
+                np.concatenate((cv,) * factor + (cv[:fraction],)), -1, axis=0
+            )
+            degree = np.clip(degree, 1, degree)
+
+        # Opened curve
+        else:
+            degree = np.clip(degree, 1, count - 1)
+            kv = np.clip(np.arange(count + degree + 1) - degree, 0, count - degree)
+
+        # Return samples
+        max_param = count - (degree * (1 - periodic))
+        spl = interpolate.BSpline(kv, cv, degree)
+        spline_data = spl(np.linspace(0, max_param, n))
+
+        return spline_data
+    return (scipy_bspline,)
+
+
+@app.cell
+def _(np, plt, scipy_bspline):
+    cv = np.array(
+        [
+            [50.0, 25.0],
+            [59.0, 12.0],
+            [50.0, 10.0],
+            [57.0, 2.0],
+            [40.0, 4.0],
+            [40.0, 14.0],
+        ]
+    )
+
+    _, ax_sp2 = plt.subplots(figsize=(8, 4))
+    ax_sp2.plot(cv[:, 0], cv[:, 1], "o-", label="Control Points")
+
+    ax_sp2.set_prop_cycle(None)
+
+    # for degree in range(1,7):
+    for degree in [1, 2, 3]:
+        p = scipy_bspline(cv, n=100, degree=degree, periodic=False)
+        x_sp, y_sp = p.T
+        ax_sp2.plot(x_sp, y_sp, label=f"Degree {degree}")
+
+    # Format the plot
+    ax_sp2.legend()
+    ax_sp2.set(xlabel=("X"), ylabel=("Y"), xlim=(35, 70), ylim=(0, 30))
+    ax_sp2.set_aspect("equal", adjustable="box")
+    plt.show()
+    return ax_sp2, cv, degree, p, x_sp, y_sp
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""## Kernel Density Estimation""")
+    return
+
+
+@app.cell
+def _(np, stats):
+    def plot_histogram(ax, data):
+        """Left plot: histogram"""
+
+        ax.hist(data, bins=6, range=[-4, 8], density=True, ec="k", fc="#AFDBFF")
+        ax.set(xlim=(-6, 11), ylim=(-0.005, 0.18), ylabel=("Density"))
+        # Add rugplot
+        for ii in range(len(data)):
+            ax.plot([data, data], [0, -0.005], "b")
+
+
+    def plot_normdist(ax, pos, sd, xcum, ycum):
+        """Plot individual curves"""
+
+        x = np.arange(pos - 3 * sd, pos + 3 * sd, 0.1)
+        nd = stats.norm(pos, sd)
+        y = nd.pdf(x)
+        ax.plot(x, y / 10, "r--", lw=0.5)
+
+        # Cumulative curve
+        xcr = np.round(xcum * 10)
+        xir = np.round(x * 10)
+        for ii in range(len(xir)):
+            ycum[xcr == xir[ii]] += y[ii]
+        return ycum
+
+
+    def explain_KDE(ax, data):
+        """Right plot: Explanation of KDE"""
+
+        # Prepare cumulative arrays
+        xcum = np.arange(-6, 11, 0.1)
+        ycum = np.zeros_like(xcum)
+
+        # Width of the individual Gaussians
+        var = 2.25
+        sd = np.sqrt(var)
+
+        # Plot individual Gaussians
+        ax.set(xlim=(-6, 11), ylim=(-0.005, 0.18))
+        ax.axhline(0)
+
+        # Rugplot & individual Gaussians
+        for ii in range(len(data)):
+            ax.plot([data, data], [0, -0.005], "b")
+            ycum = plot_normdist(ax, data[ii], sd, xcum, ycum)
+
+        # Plot cumulative curve
+        ycum /= np.sum(ycum) / 10
+        ax.plot(xcum, ycum)
+    return explain_KDE, plot_histogram, plot_normdist
+
+
+@app.cell
+def _(explain_KDE, np, plot_histogram, plt):
+    # Generate dummy data
+    x_k = np.array([-2.1, -1.3, -0.4, 1.9, 5.1, 6.2])
+
+    # Define the two plots
+    _, ax_k = plt.subplots(1, 2, sharey=True)
+
+    # Generate the left plot
+    plot_histogram(ax_k[0], x_k)
+
+    # Generate the right plot
+    explain_KDE(ax_k[1], x_k)
+    # plt.savefig("../images/filter-kde.png")
+    plt.show()
+    return ax_k, x_k
 
 
 @app.cell
