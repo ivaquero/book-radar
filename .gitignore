@@ -65,4 +65,4 @@ __pycache__/
 # Extra
 articles
 *.out
-*.py
+test.*

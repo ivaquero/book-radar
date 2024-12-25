@@ -8,10 +8,23 @@ app = marimo.App(width="medium")
 def _():
     import matplotlib.pyplot as plt
     import numpy as np
+    import skimage as ski
     from matplotlib import patches
-    from scipy import integrate, signal, interpolate, stats
+    from scipy import integrate, interpolate, ndimage, signal, stats
     from statsmodels.nonparametric.smoothers_lowess import lowess
-    return integrate, interpolate, lowess, np, patches, plt, signal, stats
+
+    return (
+        integrate,
+        interpolate,
+        lowess,
+        ndimage,
+        np,
+        patches,
+        plt,
+        signal,
+        ski,
+        stats,
+    )
 
 
 @app.cell
@@ -275,15 +288,13 @@ def _(mo):
 @app.cell
 def _(integrate, np, patches, plt):
     # Generate velocity data
-    vel = np.hstack(
-        (
-            np.arange(10) ** 2,
-            np.ones(4) * 9**2,
-            np.arange(9, 4, -1) ** 2,
-            np.ones(3) * 5**2,
-            np.arange(5, 0, -1) ** 2,
-        )
-    )
+    vel = np.hstack((
+        np.arange(10) ** 2,
+        np.ones(4) * 9**2,
+        np.arange(9, 4, -1) ** 2,
+        np.ones(3) * 5**2,
+        np.arange(5, 0, -1) ** 2,
+    ))
     time = np.arange(len(vel))
 
     ## Plot the data
@@ -367,7 +378,7 @@ def _(lowess, np, plt):
 
 @app.cell
 def _(mo):
-    mo.md(r"""## Splines""")
+    mo.md(r"""### Splines""")
     return
 
 
@@ -445,9 +456,7 @@ def _(interpolate, np):
         if periodic:
             kv = np.arange(-degree, count + degree + 1)
             factor, fraction = divmod(count + degree + 1, count)
-            cv = np.roll(
-                np.concatenate((cv,) * factor + (cv[:fraction],)), -1, axis=0
-            )
+            cv = np.roll(np.concatenate((cv,) * factor + (cv[:fraction],)), -1, axis=0)
             degree = np.clip(degree, 1, degree)
 
         # Opened curve
@@ -461,21 +470,20 @@ def _(interpolate, np):
         spline_data = spl(np.linspace(0, max_param, n))
 
         return spline_data
+
     return (scipy_bspline,)
 
 
 @app.cell
 def _(np, plt, scipy_bspline):
-    cv = np.array(
-        [
-            [50.0, 25.0],
-            [59.0, 12.0],
-            [50.0, 10.0],
-            [57.0, 2.0],
-            [40.0, 4.0],
-            [40.0, 14.0],
-        ]
-    )
+    cv = np.array([
+        [50.0, 25.0],
+        [59.0, 12.0],
+        [50.0, 10.0],
+        [57.0, 2.0],
+        [40.0, 4.0],
+        [40.0, 14.0],
+    ])
 
     _, ax_sp2 = plt.subplots(figsize=(8, 4))
     ax_sp2.plot(cv[:, 0], cv[:, 1], "o-", label="Control Points")
@@ -498,7 +506,7 @@ def _(np, plt, scipy_bspline):
 
 @app.cell
 def _(mo):
-    mo.md(r"""## Kernel Density Estimation""")
+    mo.md(r"""### Kernel Density Estimation""")
     return
 
 
@@ -512,7 +520,6 @@ def _(np, stats):
         # Add rugplot
         for ii in range(len(data)):
             ax.plot([data, data], [0, -0.005], "b")
-
 
     def plot_normdist(ax, pos, sd, xcum, ycum):
         """Plot individual curves"""
@@ -528,7 +535,6 @@ def _(np, stats):
         for ii in range(len(xir)):
             ycum[xcr == xir[ii]] += y[ii]
         return ycum
-
 
     def explain_KDE(ax, data):
         """Right plot: Explanation of KDE"""
@@ -553,6 +559,7 @@ def _(np, stats):
         # Plot cumulative curve
         ycum /= np.sum(ycum) / 10
         ax.plot(xcum, ycum)
+
     return explain_KDE, plot_histogram, plot_normdist
 
 
@@ -575,8 +582,97 @@ def _(explain_KDE, np, plot_histogram, plt):
 
 
 @app.cell
+def _(mo):
+    mo.md(r"""## Filtering Images""")
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""### Astronaut""")
+    return
+
+
+@app.cell
+def _(ski):
+    img = ski.data.astronaut()
+    img.shape
+    return (img,)
+
+
+@app.cell
+def _(img, np, plt):
+    # Get a color-image
+    nrows, ncols = img.shape[:2]
+
+    # Make vectors from 1 to 0, with lengths matching the image
+    alpha_row = np.linspace(1, 0, ncols)
+    alpha_col = np.linspace(1, 0, nrows)
+
+    # Make coordinate-grids
+    X, Y = np.meshgrid(alpha_row, alpha_col)
+
+    # Scale the vector from 0 to 255, and
+    # let the image fade from top-right to bottom-left
+    X_Y = np.uint8(X * Y * 255)
+    X_Y = np.atleast_3d(X_Y)  # make sure the dimensions matches the image
+
+    # Add the alpha-layer
+    img_alpha = np.concatenate((img, X_Y), axis=2)
+
+    plt.imshow(img_alpha)
+    return X, X_Y, Y, alpha_col, alpha_row, img_alpha, ncols, nrows
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""### Camera man""")
+    return
+
+
+@app.cell
+def _(ndimage, np, plt, ski):
+    cam = ski.data.camera()
+
+    # for the filtering, the data must not be uint
+    img_f = np.array(cam, dtype=float)
+
+    # Make the filters
+    Filters = []
+    Filters.append(np.ones((11, 11)) / 121)
+    Filters.append(np.array([np.ones(11), np.zeros(11), -1 * np.ones(11)]))
+    Filters.append(Filters[-1].T)
+
+    # Filter the images
+    filtered = []
+    for filt in Filters:
+        filtered.append(ndimage.correlate(img_f, filt))
+
+    # Make the plots
+    _, ax_is = plt.subplots(3, 2, figsize=(6, 8))
+    plt.gray()
+
+    ax_is[0, 0].imshow(cam)
+    ax_is[0, 1].imshow(filtered[0])
+    ax_is[1, 0].imshow(filtered[1])
+    ax_is[1, 1].imshow(filtered[2])
+    ax_is[2, 0].imshow(filtered[1] > 125)
+    ax_is[2, 1].imshow(filtered[2] > 125)
+
+    # Remove the ticks and labels
+    for axis in ax_is.flatten():
+        axis.axes.get_xaxis().set_visible(False)
+        axis.axes.get_yaxis().set_visible(False)
+
+    # Reduce the space between the plots
+    plt.show()
+    return Filters, ax_is, axis, cam, filt, filtered, img_f
+
+
+@app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
