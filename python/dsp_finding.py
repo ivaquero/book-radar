@@ -9,8 +9,8 @@ def _():
     import matplotlib.pyplot as plt
     import numpy as np
     import skimage as ski
-    from scipy import io, signal
-    return io, np, plt, signal, ski
+    from scipy import io, signal, interpolate
+    return interpolate, io, np, plt, signal, ski
 
 
 @app.cell
@@ -280,6 +280,99 @@ def _(corr_vis, np, plt):
     # plt.savefig("../images/cross-corr.png")
     plt.show()
     return feat, sig
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""### Auto-correlation""")
+    return
+
+
+@app.cell
+def _(np, plt):
+    # Generate the data
+    signal_ac = np.zeros(20)
+    signal_ac[7:10] = 1
+    signal_ac[14:17] = 1
+
+    _, ax_ac = plt.subplots(figsize=(8, 4))
+
+    ax_ac.plot(signal_ac, "o-")
+    ax_ac.hlines(0, 0, 19, ls="dotted")
+    ax_ac.set(xlim=(-0.5, 19.5), xticks=np.arange(0, 20, 2))
+
+    # Determine the auto-correlation
+    auto_corr = np.correlate(signal_ac, signal_ac, "full")
+    shift = np.arange(len(auto_corr)) - (len(signal_ac) - 1)
+
+    # Plot the auto-correlation
+    ax_ac.plot(shift, auto_corr)
+    ax_ac.set(xlabel="Shift", ylabel="Auto-Correlation")
+    ax_ac.margins(x=0)
+    plt.show()
+    return auto_corr, ax_ac, shift, signal_ac
+
+
+@app.cell
+def _(np, plt):
+    # Signal 1
+    x = np.zeros(20)
+    x[7:13] = 1
+    signals = [x]
+
+    # Signal 2
+    x = np.sin(np.arange(0, 12, 0.1))
+    signals.append(x)
+
+    # Make the plots
+    _, ax_acs = plt.subplots(2, 2)
+    styles = (".-", "-")
+    for ii, (sig_, sty_) in enumerate(zip(signals, styles)):
+        ax_acs[ii, 0].plot(sig_, sty_)
+        ax_acs[ii, 1].plot(np.correlate(sig_, sig_, mode="full"), sty_)
+        for ax in ax_acs[ii]:
+            ax.axhline(0, ls="dotted")
+            ax.margins(x=0)
+
+    ax_acs[0, 0].set(title="Signals")
+    ax_acs[0, 1].set(title="Auto-Correlations")
+    # plt.savefig("../images/find-autocorr.png")
+    plt.show()
+    return ax, ax_acs, ii, sig_, signals, sty_, styles, x
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""## Interpolation""")
+    return
+
+
+@app.cell
+def _(interpolate, np, plt):
+    # Generate the data
+    xx = np.arange(7)
+    yy = np.sin(xx)
+
+    # Linear interpolation
+    xxi = np.arange(0, 6, 0.01)
+    yyi = np.interp(xxi, xx, yy)
+
+    # Cubic interpolation
+    cs = interpolate.CubicSpline(xx, yy)
+    yic = cs(xxi)
+
+    # Plot polynomial interpolations
+    _, ax_ip = plt.subplots(figsize=(8, 4))
+    ax_ip.plot(xx, yy, "ro", label="original data")
+    ax_ip.plot(xxi, yyi, ls="dashed", label="linear interpolation")
+    ax_ip.plot(xxi, yic, label="cubic spline")
+
+    # Format the plot
+    ax_ip.set(yticks=np.linspace(-1, 1, 5))
+    ax_ip.axhline(0, linestyle="dotted")
+    ax_ip.legend()
+    # plt.savefig("../images/find-interpol.png")
+    return ax_ip, cs, xx, xxi, yic, yy, yyi
 
 
 @app.cell
