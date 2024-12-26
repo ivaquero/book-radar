@@ -9,7 +9,8 @@ def _():
     import matplotlib.pyplot as plt
     import numpy as np
     import skimage as ski
-    from scipy import io, signal, interpolate
+    from scipy import interpolate, io, signal
+
     return interpolate, io, np, plt, signal, ski
 
 
@@ -115,9 +116,7 @@ def _(io, np, plt, signal, threshold):
 
     # Plot3: show where the absolute velocity exceeds the threshold
     is_fast = eye_vel_abs > threshold
-    ax_f[2, 0].plot(
-        is_fast[my_domain], "o-", ms=2
-    )  # 'ms' is short for 'markersize'
+    ax_f[2, 0].plot(is_fast[my_domain], "o-", ms=2)  # 'ms' is short for 'markersize'
     ax_f[2, 0].set(ylabel="Above threshold")
     ax_f[2, 0].margins(x=0)
 
@@ -128,9 +127,7 @@ def _(io, np, plt, signal, threshold):
     ax_f[0, 1].margins(x=0)
 
     # Plot5: Find the start and end of each movement
-    start_stop = np.diff(
-        is_fast * 1
-    )  # "*1": to convert boolean signal to numerical
+    start_stop = np.diff(is_fast * 1)  # "*1": to convert boolean signal to numerical
     ax_f[1, 1].plot(start_stop[close_domain])
     ax_f[1, 1].set(ylabel="Start / Stop")
     ax_f[1, 1].margins(x=0)
@@ -263,6 +260,7 @@ def _(np, plt):
 
             # Update the plot
             plt.draw()
+
     return (corr_vis,)
 
 
@@ -378,6 +376,7 @@ def _(interpolate, np, plt):
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
