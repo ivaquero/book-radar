@@ -346,7 +346,7 @@ def _(np, plt, signal):
     def welch_periodogram(data, rate, freq, Pxx):
         """Comparison of simple powerspectrum to Welch-periodogram"""
 
-        _, axs = plt.subplots(1, 2, constrained_layout=True)
+        _, axs = plt.subplots(1, 2, figsize=(8, 4), constrained_layout=True)
         f, welch = signal.welch(data, fs=rate, nperseg=len(data) / 8)
         df = np.diff(f)[0]
         # "normalize" welch
@@ -370,6 +370,7 @@ def _(np, plt, signal):
 @app.cell
 def _(Pxx, freq, plt, rate, sound_data, welch_periodogram):
     welch_periodogram(sound_data, rate, freq, Pxx)
+    # plt.savefig("../images/spectral-periodo-welch.png")
     plt.show()
     return
 

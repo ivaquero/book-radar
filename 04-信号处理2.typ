@@ -220,7 +220,7 @@ $
 
 @sample 的右侧面板显示了上述模拟噪声正弦波的频谱（即 Fourier 系数的幅度）（持续时间=1 分钟，采样率=100 Hz）。
 
-== 谱密度估计
+= 谱密度估计
 
 对于许多应用来说，Fourier 系数的相位并不是很重要，主要目标是获得信号频谱密度的估计值，也称为功率谱（power spectrum）。该频谱密度表征信号的频率内容。
 
@@ -231,7 +231,7 @@ $
   - Welch 方法：使用时间平均的周期图的窗口版本
 - 参数技术包括自回归模型（autoregressive model，AR）、移动平均模型（moving-average model，MA）和自回归移动平均（autoregressive moving average，ARMA）模型。
 
-=== 周期图
+== 周期图
 
 将 FFT 应用于时间相关信号可返回复数 Fourier 系数$X_n$。每次振荡贡献的信号“功率”与 Fourier 系数幅度的平方成正比：
 
@@ -243,7 +243,7 @@ $
 
 #figure(
   image("images/spectral-periodo.png", width: 40%),
-  caption: "周期图（左图为线性标度，右图为对数标度）",
+  caption: "周期图（左为线性标度，右为对数标度）",
   supplement: [图],
 ) <periodo>\
 
@@ -251,11 +251,19 @@ $
 
 #figure(
   image("images/spectral-periodo-noise.png", width: 40%),
-  caption: "",
+  caption: "带噪声的周期图",
   supplement: [图],
 )
 
-=== Welch 周期图
+== Welch 周期图
+
+为了降低功率谱中的噪声，可以采用一种称为 Welch 周期图的程序。这样，数据集被分解成多个单独的段，为每个段计算功率谱，然后对得到的功率谱取平均值 (图 9.13)。返回得到的功率信号 (功率谱密度 - PSD)。假设频率分布保持大致恒定，这会增强主要成分并降低随机噪声。代价是降低频率分辨率（@welch）。
+
+#figure(
+  image("images/spectral-periodo-welch.png", width: 40%),
+  caption: "Welch 周期图降噪",
+  supplement: [图],
+) <welch>
 
 == Fourier 变换、卷积和互相关
 
