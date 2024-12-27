@@ -266,7 +266,7 @@ def _(np, plt):
 
 @app.cell
 def _(corr_vis, np, plt):
-    # Generate the data used in the book
+    # Generate the data
     sig = np.zeros(20)
     sig[7:10] = 1
     sig[14:17] = 1
