@@ -242,10 +242,18 @@ $
 这被称为信号的周期图或功率谱，因为它描述了功率的分布——与幅度的平方成比例——在组成该信号的各个频率分量上。周期图中的谱密度通常以对数尺度显示，因为这通常可以更好地视图较小但通常很重要的频率贡献（@periodo）。
 
 #figure(
-  image("images/spectral-periodogram.png", width: 40%),
+  image("images/spectral-periodo.png", width: 40%),
   caption: "周期图（左图为线性标度，右图为对数标度）",
   supplement: [图],
-) <periodo>
+) <periodo>\
+
+功率谱的峰值包含对信号的重要频率贡献。信号的噪声部分取决于数值差异以及功率谱计算中使用的“加窗”（windowing）产生的伪影，对信号的形状没有显著贡献。
+
+#figure(
+  image("images/spectral-periodo-noise.png", width: 40%),
+  caption: "",
+  supplement: [图],
+)
 
 === Welch 周期图
 

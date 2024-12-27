@@ -293,7 +293,7 @@ def _(plt):
 @app.cell
 def _(Pxx, freq, linear_and_log, plt):
     linear_and_log(freq, Pxx)
-    # plt.savefig("../images/spectral-periodogram.png")
+    # plt.savefig("../images/spectral-periodo.png")
     plt.show()
     return
 
@@ -311,7 +311,7 @@ def _(freq, np, plt):
         # Normalize to 'density'
         Pxx_noisy = Pxx_noisy * 2 / (np.sum(Pxx_noisy) / duration)
 
-        _, axs = plt.subplots(1, 2, constrained_layout=True)
+        _, axs = plt.subplots(1, 2, figsize=(8, 4), constrained_layout=True)
         axs[0].plot(time, sound, label="original")
         axs[0].plot(time, sound_noisy, label="noise added")
         axs[0].set(xlabel="Time (s)", ylabel="Sound-pressure ()", xlim=time_slice)
@@ -330,6 +330,7 @@ def _(freq, np, plt):
 @app.cell
 def _(Pxx, duration, noise_effects, plt, sound_data, time, time_slice):
     noise_effects(time, sound_data, Pxx, time_slice, duration)
+    # plt.savefig("../images/spectral-periodo-noise.png")
     plt.show()
     return
 
