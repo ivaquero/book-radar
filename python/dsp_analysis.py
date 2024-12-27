@@ -255,11 +255,23 @@ def _(Pxx, fourier_intro, freq, plt, sound_data, time, time_slice):
 
 
 @app.cell
+def _(mo):
+    mo.md(r"""## Spectral Density Estimation""")
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""### Periodogram""")
+    return
+
+
+@app.cell
 def _(plt):
     def linear_and_log(freq, Pxx):
         """Comparison of linear and log representatino of powerspectrum."""
 
-        _, axs = plt.subplots(1, 2, constrained_layout=True)
+        _, axs = plt.subplots(1, 2, figsize=(8, 4), constrained_layout=True)
         upper_limit = 4000
         axs[0].plot(freq, Pxx)
         axs[0].set(
@@ -281,6 +293,7 @@ def _(plt):
 @app.cell
 def _(Pxx, freq, linear_and_log, plt):
     linear_and_log(freq, Pxx)
+    # plt.savefig("../images/spectral-periodogram.png")
     plt.show()
     return
 
@@ -322,6 +335,12 @@ def _(Pxx, duration, noise_effects, plt, sound_data, time, time_slice):
 
 
 @app.cell
+def _(mo):
+    mo.md(r"""## Fourier Transformation, Convolution, and Cross-Correlation""")
+    return
+
+
+@app.cell
 def _(np, plt, signal):
     def welch_periodogram(data, rate, freq, Pxx):
         """Comparison of simple powerspectrum to Welch-periodogram"""
@@ -356,7 +375,7 @@ def _(Pxx, freq, plt, rate, sound_data, welch_periodogram):
 
 @app.cell
 def _(mo):
-    mo.md(r"""### Fourier Integral""")
+    mo.md(r"""## Time Dependent Fourier Transform""")
     return
 
 
