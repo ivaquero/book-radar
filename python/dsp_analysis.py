@@ -10,8 +10,9 @@ def _():
 
     import matplotlib.pyplot as plt
     import numpy as np
+    from numpy import fft
     from scipy import signal, io
-    return Tuple, io, np, plt, signal
+    return Tuple, fft, io, np, plt, signal
 
 
 @app.cell
@@ -382,6 +383,12 @@ def _(mo):
 
 
 @app.cell
+def _(mo):
+    mo.md(r"""### Windowing""")
+    return
+
+
+@app.cell
 def _(io, np, plt, signal, time):
     # Set the parameters
     slice = range(7000, 20000)
@@ -398,14 +405,12 @@ def _(io, np, plt, signal, time):
     a1 /= np.max(a1)
     max_sound = np.max(a1[win_index])
 
-    # Make the plots -----------------------------------
-    fig, ax_w = plt.subplots(2, 2)
-    thin = 0.2
-
+    # Make the plots
+    fig, ax_w = plt.subplots(2, 2, constrained_layout=True)
     # Sound
-    ax_w[0, 0].plot(time_w, a1, lw=thin)
+    ax_w[0, 0].plot(time_w, a1, lw=0.2)
     ax_w[0, 0].margins(x=0)
-    ax_w[0, 0].set(ylabel="Sound ()")
+    ax_w[0, 0].set(ylabel="Sound")
     ax_w[0, 0].set(xticklabels="")
 
     # Window
@@ -418,7 +423,7 @@ def _(io, np, plt, signal, time):
             ax.axvline(time_w[index], lw=0.5, ls="dashed")
 
     # Sound & window
-    ax_w[0, 1].plot(time_w[win_index], a1[win_index], lw=thin)
+    ax_w[0, 1].plot(time_w[win_index], a1[win_index], lw=0.2)
     ax_w[0, 1].plot(time_w[win_index], window[win_index] * max_sound)
     ax_w[0, 1].set_xticklabels("")
     ax_w[0, 1].set_yticks([-0.5, 0, 0.5])
@@ -428,12 +433,13 @@ def _(io, np, plt, signal, time):
     ax_w[1, 1].plot(time[win_index], window[win_index] * a1[win_index], lw=0.6)
     ax_w[1, 1].plot(time[win_index], window[win_index] * max_sound, ls="dashed")
     ax_w[1, 1].set(
-        xlabel="Time (s)", ylabel="Windowed Sound ()", yticks=[-0.5, 0, 0.5]
+        xlabel="Time (s)", ylabel="Windowed Sound", yticks=[-0.5, 0, 0.5]
     )
 
     for ax in ax_w.ravel():
         ax.margins(x=0)
 
+    # plt.savefig("../images/spectral-window.png")
     plt.show()
     return (
         a1,
@@ -445,12 +451,107 @@ def _(io, np, plt, signal, time):
         rate_w,
         slice,
         sound,
-        thin,
         time_w,
         win_index,
         win_length,
         window,
     )
+
+
+@app.cell
+def _(Tuple, fft, np):
+    def powerSpect(data: np.ndarray, rate: float) -> Tuple:
+        """Powerspectrum, calculated via Fourier Transfrom
+
+        Parameters
+        ----------
+        data : signal
+        rate : sampling rate [Hz]
+
+        Returns
+        -------
+        Pxx : one-sided power spectrum
+        freq : corresponding frequencies [Hz]
+        """
+
+        n_data = len(data)
+        fft_coeffs = fft.fft(data)
+
+        Pxx = np.abs(fft_coeffs) ** 2 / n_data
+        freq = fft.fftfreq(n_data, 1 / rate)
+
+        nyq = int(len(Pxx) / 2)
+        return (Pxx[:nyq], freq[:nyq])
+    return (powerSpect,)
+
+
+@app.cell
+def _(List, np, powerSpect):
+    def showData(data: np.ndarray, rate: float, legend: str, axs: List) -> None:
+        """Show data in time domain, and corresponding powerspectrum
+
+        Parameters
+        ----------
+        data : signal
+        rate : sample rate [Hz]
+        legend : type of signal
+        axs : axes in which to plot the signal and the powerspectrum
+        """
+
+        t = np.arange(len(data)) / rate
+        axs[0].plot(t, data, label=legend)
+
+        # Calculate the powerspectrum
+        (Pxx, freq) = powerSpect(data, rate)
+
+        axs[1].plot(freq, Pxx, ".-", lw=0.5)
+        axs[1].set(xlim=(1, 5000))
+    return (showData,)
+
+
+@app.cell
+def _(np, plt, showData, signal):
+    # Set the parameters
+    sample_rate = 100000
+    dt_h = 1.0 / sample_rate
+    f_h = 1000
+    tMax = 0.01
+
+    _, ax_h = plt.subplots(3, 2, figsize=(8, 4), constrained_layout=True)
+
+    # Data ...
+    t_h = np.arange(0, tMax, dt_h)
+    x_h = np.cos(2 * np.pi * f_h * t_h)
+
+    # ... clipped ...
+    y_h = x_h.copy()
+    y_h[:199] = 0
+    y_h[400:1001] = 0
+
+    # ... and windowed
+    z_h = y_h.copy()
+    hann = signal.windows.hann(201)
+    z_h[199:400] = z_h[199:400] * hann
+
+    # Plot the data
+    showData(x_h, sample_rate, "Cosine wave", ax_h[0])
+    showData(y_h, sample_rate, "Clipped", ax_h[1])
+    showData(z_h, sample_rate, "   Clipped\n& Windowed", ax_h[2])
+
+    # Format the plot
+    ax_h[0, 0].set(title="Signal")
+    ax_h[0, 1].set(title="Power")
+
+    ax_h[1, 0].legend()
+    ax_h[2, 0].legend()
+    for axh in ax_h[0].tolist() + ax_h[1].tolist():
+        axh.set(xticklabels="")
+
+    ax_h[2, 0].set(xlabel="Time (s)")
+    ax_h[2, 1].set(xlabel="Frequency (Hz)")
+    # plt.savefig("../images/spectral-hann.png")
+    plt.show()
+    return ax_h, axh, dt_h, f_h, hann, sample_rate, tMax, t_h, x_h, y_h, z_h
 
 
 @app.cell
