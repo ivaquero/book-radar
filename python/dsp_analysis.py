@@ -382,8 +382,75 @@ def _(mo):
 
 
 @app.cell
-def _():
-    return
+def _(io, np, plt, signal, time):
+    # Set the parameters
+    slice = range(7000, 20000)
+
+    win_length = 500
+    win_index = range(2000, 2000 + win_length)
+
+
+    # Get the data
+    rate_w, sound = io.wavfile.read("../data/a1.wav")
+    a1 = np.float32(sound[slice])
+    time_w = np.arange(len(a1)) / rate_w
+
+    a1 /= np.max(a1)
+    max_sound = np.max(a1[win_index])
+
+    # Make the plots -----------------------------------
+    fig, ax_w = plt.subplots(2, 2)
+    thin = 0.2
+
+    # Sound
+    ax_w[0, 0].plot(time_w, a1, lw=thin)
+    ax_w[0, 0].margins(x=0)
+    ax_w[0, 0].set(ylabel="Sound ()")
+    ax_w[0, 0].set(xticklabels="")
+
+    # Window
+    window = np.zeros_like(time_w)
+    window[win_index] = signal.windows.hann(win_length)
+    ax_w[1, 0].plot(time_w, window, color="C1")
+    ax_w[1, 0].set(xlabel="Time (s)", ylabel="Window", ylim=(0, 1))
+    for ax in [ax_w[0, 0], ax_w[1, 0]]:
+        for index in [min(win_index), max(win_index)]:
+            ax.axvline(time_w[index], lw=0.5, ls="dashed")
+
+    # Sound & window
+    ax_w[0, 1].plot(time_w[win_index], a1[win_index], lw=thin)
+    ax_w[0, 1].plot(time_w[win_index], window[win_index] * max_sound)
+    ax_w[0, 1].set_xticklabels("")
+    ax_w[0, 1].set_yticks([-0.5, 0, 0.5])
+    ax_w[0, 1].axhline(0, ls="dashed")
+
+    # Windowed sound
+    ax_w[1, 1].plot(time[win_index], window[win_index] * a1[win_index], lw=0.6)
+    ax_w[1, 1].plot(time[win_index], window[win_index] * max_sound, ls="dashed")
+    ax_w[1, 1].set(
+        xlabel="Time (s)", ylabel="Windowed Sound ()", yticks=[-0.5, 0, 0.5]
+    )
+
+    for ax in ax_w.ravel():
+        ax.margins(x=0)
+
+    plt.show()
+    return (
+        a1,
+        ax,
+        ax_w,
+        fig,
+        index,
+        max_sound,
+        rate_w,
+        slice,
+        sound,
+        thin,
+        time_w,
+        win_index,
+        win_length,
+        window,
+    )
 
 
 @app.cell
