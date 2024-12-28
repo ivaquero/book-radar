@@ -1,14 +1,20 @@
 #import "@local/scibook:0.1.0": *
 #show: doc => conf(
-  title: "汽车工具箱 API",
-  author: ("SZZX"),
+  title: "相关工具箱 API",
+  author: "SZZX",
   footer-cap: "SZZX",
   header-cap: "雷达基础知识手册",
   outline-on: false,
   doc,
 )
 
-= 基础
+= 雷达
+
+- APP
+  - radarDesigner
+  - pulseWaveformAnalyzer
+
+= 汽车
 
 == 场景
 
@@ -58,9 +64,9 @@
   ],
 )
 
-= 绘图
+== 绘图
 
-== 对象
+=== 对象
 
 #block(
   height: 9em,
@@ -69,6 +75,6 @@
   ],
 )
 
-= APP
+== APP
 
 drivingScenarioDesigner
