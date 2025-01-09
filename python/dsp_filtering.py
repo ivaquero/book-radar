@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.10.7"
+__generated_with = "0.10.9"
 app = marimo.App(width="medium")
 
 
@@ -10,12 +10,12 @@ def _():
     import numpy as np
     import skimage as ski
     from matplotlib import patches
-    from scipy import integrate, interpolate, ndimage, signal, stats
+    from scipy import integrate, interpolate, ndimage, signal, stats, io
     from statsmodels.nonparametric.smoothers_lowess import lowess
-
     return (
         integrate,
         interpolate,
+        io,
         lowess,
         ndimage,
         np,
@@ -31,6 +31,82 @@ def _():
 def _(mo):
     mo.md(r"""## Filter Types""")
     return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""### Moving Average""")
+    return
+
+
+@app.cell
+def _(io, np, signal):
+    tempC = io.loadmat("../data/bostemp.mat")
+    coef_24h = np.ones(24) / 24
+    zi = signal.lfilter_zi(coef_24h, 1) * 0
+    avg24hTempC, _ = signal.lfilter(coef_24h, 1, tempC["tempC"].flatten(), zi=zi)
+    zi
+    return avg24hTempC, coef_24h, tempC, zi
+
+
+@app.cell
+def _(avg24hTempC, coef_24h, np, plt, tempC):
+    days = (np.arange(31 * 24) + 1) / 24
+    fDelay = (coef_24h.size - 1) / 2
+    _, ax_ma = plt.subplots(figsize=(8, 4))
+    ax_ma.plot(days, tempC["tempC"], linewidth=0.6, label="Hourly Temp")
+    ax_ma.plot(days, avg24hTempC, linewidth=0.6, label="24 Hour Average (delayed)")
+    ax_ma.plot(
+        days - fDelay / 24, avg24hTempC, linewidth=0.6, label="24 Hour Average"
+    )
+    ax_ma.legend()
+    ax_ma.set(
+        title="Logan Airport Dry Bulb Temperature (source: NOAA)",
+        xlabel="Time elapsed from Jan 1, 2011 (days)",
+        ylabel="Temp ($ ^∘ $C)",
+    )
+    # plt.savefig("../images/filter-ma.png")
+    plt.show()
+    return ax_ma, days, fDelay
+
+
+@app.cell
+def _(avg24hTempC, np, plt, tempC):
+    deltaTempC = tempC["tempC"].flatten() - avg24hTempC
+    _, ax_d = plt.subplots()
+    ax_d.plot(np.arange(24) + 1, np.mean(deltaTempC.reshape(31, 24), 0))
+    ax_d.set(
+        title="Mean temperature differential from 24 hour average",
+        xlabel="Hour of day (since midnight)",
+        ylabel="Temperature difference ($ ^\circ $C)",
+    )
+    return ax_d, deltaTempC
+
+
+@app.cell
+def _(days, interpolate, plt, signal, tempC):
+    envHigh_index, _ = signal.find_peaks(tempC["tempC"].flatten(), distance=16)
+    envHigh = interpolate.UnivariateSpline(
+        days[envHigh_index], tempC["tempC"][envHigh_index].flatten(), s=0
+    )
+    envLow_index, _ = signal.find_peaks(-tempC["tempC"].flatten(), distance=16)
+    envLow = interpolate.UnivariateSpline(
+        days[envLow_index], tempC["tempC"][envLow_index].flatten(), s=0
+    )
+    envMean = (envHigh(days) + envLow(days)) / 2
+
+    _, ax_p = plt.subplots()
+    ax_p.plot(days, tempC["tempC"], linewidth=0.6, label="Hourly Temp")
+    ax_p.plot(days, envHigh(days), linewidth=0.6, label="High")
+    ax_p.plot(days, envMean, linewidth=0.6, label="Mean")
+    ax_p.plot(days, envLow(days), linewidth=0.6, label="Low")
+    ax_p.legend()
+    ax_p.set(
+        title="Logan Airport Dry Bulb Temperature (source: NOAA)",
+        xlabel="Time elapsed from Jan 1, 2011 (days)",
+        ylabel="Temp ($^∘$C)",
+    )
+    return ax_p, envHigh, envHigh_index, envLow, envLow_index, envMean
 
 
 @app.cell
@@ -288,13 +364,15 @@ def _(mo):
 @app.cell
 def _(integrate, np, patches, plt):
     # Generate velocity data
-    vel = np.hstack((
-        np.arange(10) ** 2,
-        np.ones(4) * 9**2,
-        np.arange(9, 4, -1) ** 2,
-        np.ones(3) * 5**2,
-        np.arange(5, 0, -1) ** 2,
-    ))
+    vel = np.hstack(
+        (
+            np.arange(10) ** 2,
+            np.ones(4) * 9**2,
+            np.arange(9, 4, -1) ** 2,
+            np.ones(3) * 5**2,
+            np.arange(5, 0, -1) ** 2,
+        )
+    )
     time = np.arange(len(vel))
 
     ## Plot the data
@@ -456,7 +534,9 @@ def _(interpolate, np):
         if periodic:
             kv = np.arange(-degree, count + degree + 1)
             factor, fraction = divmod(count + degree + 1, count)
-            cv = np.roll(np.concatenate((cv,) * factor + (cv[:fraction],)), -1, axis=0)
+            cv = np.roll(
+                np.concatenate((cv,) * factor + (cv[:fraction],)), -1, axis=0
+            )
             degree = np.clip(degree, 1, degree)
 
         # Opened curve
@@ -470,20 +550,21 @@ def _(interpolate, np):
         spline_data = spl(np.linspace(0, max_param, n))
 
         return spline_data
-
     return (scipy_bspline,)
 
 
 @app.cell
 def _(np, plt, scipy_bspline):
-    cv = np.array([
-        [50.0, 25.0],
-        [59.0, 12.0],
-        [50.0, 10.0],
-        [57.0, 2.0],
-        [40.0, 4.0],
-        [40.0, 14.0],
-    ])
+    cv = np.array(
+        [
+            [50.0, 25.0],
+            [59.0, 12.0],
+            [50.0, 10.0],
+            [57.0, 2.0],
+            [40.0, 4.0],
+            [40.0, 14.0],
+        ]
+    )
 
     _, ax_sp2 = plt.subplots(figsize=(8, 4))
     ax_sp2.plot(cv[:, 0], cv[:, 1], "o-", label="Control Points")
@@ -521,6 +602,7 @@ def _(np, stats):
         for ii in range(len(data)):
             ax.plot([data, data], [0, -0.005], "b")
 
+
     def plot_normdist(ax, pos, sd, xcum, ycum):
         """Plot individual curves"""
 
@@ -535,6 +617,7 @@ def _(np, stats):
         for ii in range(len(xir)):
             ycum[xcr == xir[ii]] += y[ii]
         return ycum
+
 
     def explain_KDE(ax, data):
         """Right plot: Explanation of KDE"""
@@ -559,7 +642,6 @@ def _(np, stats):
         # Plot cumulative curve
         ycum /= np.sum(ycum) / 10
         ax.plot(xcum, ycum)
-
     return explain_KDE, plot_histogram, plot_normdist
 
 
@@ -672,7 +754,6 @@ def _(ndimage, np, plt, ski):
 @app.cell
 def _():
     import marimo as mo
-
     return (mo,)
 
 
