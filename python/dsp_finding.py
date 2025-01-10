@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.10.7"
+__generated_with = "0.10.9"
 app = marimo.App(width="medium")
 
 
@@ -8,10 +8,259 @@ app = marimo.App(width="medium")
 def _():
     import matplotlib.pyplot as plt
     import numpy as np
+    import pandas as pd
     import skimage as ski
     from scipy import interpolate, io, signal
+    return interpolate, io, np, pd, plt, signal, ski
 
-    return interpolate, io, np, plt, signal, ski
+
+@app.cell
+def _(mo):
+    mo.md(r"""## Preprocessing""")
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""### De-trend""")
+    return
+
+
+@app.cell
+def _(io, np, plt):
+    ecgl = io.loadmat("../data/ecgl.mat")
+    ecgnl = io.loadmat("../data/ecgnl.mat")
+
+    t_ecg = len(ecgl["ecgl"])
+    x_ecg = np.linspace(0, t_ecg, t_ecg)
+
+    # 画图
+    fig_ecg, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 4), sharex=True)
+
+    ax1.plot(ecgl["ecgl"])
+    ax1.set(ylabel="Voltage (mV)")
+    ax2.plot(ecgnl["ecgnl"])
+    ax2.set(ylabel="Voltage (mV)")
+    fig_ecg.suptitle("ECG Signals with Trends")
+    # plt.savefig("../images/find-trend.png")
+    return ax1, ax2, ecgl, ecgnl, fig_ecg, t_ecg, x_ecg
+
+
+@app.cell
+def _(ecgl, ecgnl, plt, signal):
+    dt_ecgl = signal.detrend(
+        ecgl["ecgl"], axis=-1, type="linear", bp=0, overwrite_data=False
+    )
+    dt_ecgnl = signal.detrend(
+        ecgnl["ecgnl"], axis=-1, type="linear", bp=0, overwrite_data=False
+    )
+    fig_ecgd, (ax_1, ax_2) = plt.subplots(2, 1, figsize=(8, 4), sharex=True)
+
+    ax_1.plot(dt_ecgl)
+    ax_1.set(ylabel="Voltage (mV)")
+
+    ax_2.plot(dt_ecgnl)
+    ax_2.set(ylabel="Voltage (mV)")
+    fig_ecgd.suptitle("Detrended ECG Signals")
+    # plt.savefig("../images/find-trend2.png")
+    return ax_1, ax_2, dt_ecgl, dt_ecgnl, fig_ecgd
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""### Butterworth""")
+    return
+
+
+@app.cell
+def _(io):
+    openLoop = io.loadmat("../data/openloop60hertz.mat")
+    Fs = 1000
+    return Fs, openLoop
+
+
+@app.cell
+def _(Fs, np, plt, signal):
+    nom, denom = signal.iirfilter(
+        N=5, Wn=[59, 61], btype="bandstop", analog=False, ftype="butter", fs=Fs
+    )
+    freq, h = signal.freqz(nom, denom, fs=Fs)
+    _, ax_bw = plt.subplots(figsize=(8, 4))
+    ax_bw.plot(freq, 20 * np.log10(np.abs(h)))
+    ax_bw.set(
+        xlabel="Frequency (Hz)",
+        ylabel="Magnitude (dB)",
+        title="Magnitude Response (dB)",
+        xticks=np.arange(0, 501, 50),
+    )
+    ax_bw.grid()
+    # plt.savefig("../images/find-butterworth.png")
+    plt.show()
+    return ax_bw, denom, freq, h, nom
+
+
+@app.cell
+def _(Fs, denom, nom, np, openLoop, plt, signal):
+    x_volt = openLoop["openLoopVoltage"]
+    t_volt = np.arange(len(x_volt)) / Fs
+
+    buttLoop = signal.filtfilt(nom, denom, x_volt.flatten())
+    # savgolLoop = signal.savgol_filter(x_volt.flatten(), 17, 1)
+    _, ax_bwf = plt.subplots(figsize=(8, 4))
+    ax_bwf.plot(t_volt, x_volt, label="Unfiltered")
+    ax_bwf.plot(t_volt, buttLoop, label="Filtfilter Filtered")
+    # ax_bwf.plot(t_volt, savgolLoop, label="Savgol Filtered")
+    ax_bwf.set(
+        xlabel="Time (s)",
+        ylabel="Voltage (V)",
+        title="Open-Loop Voltage with 60 Hz Noise",
+        xlim=(0, 2),
+        ylim=(-9, -7.2),
+    )
+    ax_bwf.legend()
+    ax_bwf.grid()
+    # plt.savefig("../images/find-filtfilter.png")
+    plt.show()
+    return ax_bwf, buttLoop, t_volt, x_volt
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""### Resampling""")
+    return
+
+
+@app.cell
+def _(plt, signal, t_volt, x_volt):
+    # buttLoop = signal.filtfilt(nom, denom, x_volt.flatten())
+    savgolLoop = signal.savgol_filter(x_volt.flatten(), 17, 1)
+    _, ax_bwf2 = plt.subplots(figsize=(8, 4))
+    # ax_bwf2.plot(t_volt, x_volt, label="Unfiltered")
+    # ax_bwf.plot(t_volt, buttLoop, label="Filtfilter Filtered")
+    ax_bwf2.plot(
+        t_volt, savgolLoop, label="Moving average filter operating at 58.82 Hz"
+    )
+    ax_bwf2.set(
+        xlabel="Time (s)",
+        ylabel="Voltage (V)",
+        title="Open-Loop Voltage with 60 Hz Noise",
+        xlim=(0, 2),
+        ylim=(-9, -7.2),
+    )
+    ax_bwf2.legend()
+    ax_bwf2.grid()
+    # plt.savefig("../images/find-savgol.png")
+    plt.show()
+    return ax_bwf2, savgolLoop
+
+
+@app.cell
+def _(Fs, np, plt, signal, x_volt):
+    fsResamp = 1020
+    vResamp = signal.resample(
+        x_volt.flatten(),
+        int(x_volt.size / Fs * fsResamp),
+    )
+    tResamp = np.arange(vResamp.size) / fsResamp
+    vAvgResamp = signal.savgol_filter(vResamp, 17, 1)
+    _, ax_rs = plt.subplots(figsize=(8, 4))
+    ax_rs.plot(
+        tResamp,
+        vAvgResamp,
+        label="Moving average filter operating at 60 Hz",
+    )
+    ax_rs.set(
+        xlabel="Time (s)",
+        ylabel="Voltage (V)",
+        title="Open-loop Voltage Measurement",
+        xlim=(0, 2),
+        ylim=(-9, -7.2),
+    )
+    ax_rs.legend()
+    # plt.savefig("../images/find-resample.png")
+    return ax_rs, fsResamp, tResamp, vAvgResamp, vResamp
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""### Hampel Filter""")
+    return
+
+
+@app.cell
+def _(io):
+    train = io.loadmat("../data/train.mat")
+    train_wnoise = train["y"].flatten()
+    train_wnoise[::400] = 2.1
+    train["y"]
+    return train, train_wnoise
+
+
+@app.cell
+def _(np, plt, signal, train_wnoise):
+    _, ax_hp = plt.subplots(figsize=(8, 4))
+    ax_hp.scatter(np.arange(12880) + 1, train_wnoise, s=1)
+    ax_hp.plot(train_wnoise, label="original signal", alpha=0.5)
+    ax_hp.plot(
+        signal.medfilt(train_wnoise, 3), label="median filtered signal", alpha=0.8
+    )
+    ax_hp.legend()
+    ax_hp.set(xlim=[0, 14000], ylim=[-1, 2.5])
+    # plt.savefig("../images/filter-med.png")
+    plt.show()
+    return (ax_hp,)
+
+
+@app.cell
+def _(np):
+    def hampel(x, k, n_sigma=3):
+        arraySize = len(x)
+        idx = np.arange(arraySize)
+        output_x = x.copy()
+        output_idx = np.zeros_like(x)
+
+        for i in range(arraySize):
+            mask1 = np.where(idx >= (idx[i] - k), True, False)
+            mask2 = np.where(idx <= (idx[i] + k), True, False)
+            kernel = np.logical_and(mask1, mask2)
+            median = np.median(x[kernel])
+            std = 1.4826 * np.median(np.abs(x[kernel] - median))
+            if np.abs(x[i] - median) > n_sigma * std:
+                output_idx[i] = 1
+                output_x[i] = median
+
+        return output_x, output_idx.astype(bool)
+    return (hampel,)
+
+
+@app.cell
+def _(hampel, np, pd, plt, train_wnoise):
+    train_noise = pd.Series(train_wnoise.tolist())
+    train_wnoise_imp, _ = hampel(train_noise, k=11 // 2, n_sigma=3)
+    train_wnoise_out, train_wnoise_out_idx = hampel(
+        train_noise, k=11 // 2, n_sigma=20
+    )
+    _, ax_hp2 = plt.subplots(figsize=(8, 4))
+    ax_hp2.plot(train_wnoise, label="original signal", alpha=0.5)
+    ax_hp2.scatter(np.arange(12880) + 1, train_wnoise, s=3)
+    ax_hp2.plot(train_wnoise_imp, label="Hampel filtered signal", alpha=0.8)
+    # ax_hp2.scatter(
+    #     train_wnoise_out,
+    #     train_wnoise[np.array(train_wnoise_out_idx)],
+    #     c="w",
+    #     marker="s",
+    #     edgecolors="black",
+    #     label="outliers",
+    # )
+    ax_hp2.legend()
+    # plt.savefig("../images/filter-hampel.png")
+    return (
+        ax_hp2,
+        train_noise,
+        train_wnoise_imp,
+        train_wnoise_out,
+        train_wnoise_out_idx,
+    )
 
 
 @app.cell
@@ -127,7 +376,9 @@ def _(io, np, plt, signal, threshold):
     ax_f[0, 1].margins(x=0)
 
     # Plot5: Find the start and end of each movement
-    start_stop = np.diff(is_fast * 1)  # "*1": to convert boolean signal to numerical
+    start_stop = np.diff(
+        is_fast * 1
+    )  # "*1": to convert boolean signal to numerical
     ax_f[1, 1].plot(start_stop[close_domain])
     ax_f[1, 1].set(ylabel="Start / Stop")
     ax_f[1, 1].margins(x=0)
@@ -260,7 +511,6 @@ def _(np, plt):
 
             # Update the plot
             plt.draw()
-
     return (corr_vis,)
 
 
@@ -376,7 +626,6 @@ def _(interpolate, np, plt):
 @app.cell
 def _():
     import marimo as mo
-
     return (mo,)
 
 

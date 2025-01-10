@@ -14,6 +14,7 @@ def _():
     from numba import jit, njit, prange
     from scipy import integrate, interpolate, io, ndimage, signal, stats
     from statsmodels.nonparametric.smoothers_lowess import lowess
+
     return (
         integrate,
         interpolate,
@@ -466,86 +467,6 @@ def _(days, plt, signal, tempC):
 
 @app.cell
 def _(mo):
-    mo.md(r"""### Hampel Filter""")
-    return
-
-
-@app.cell
-def _(io):
-    train = io.loadmat("../data/train.mat")
-    train_wnoise = train["y"].flatten()
-    train_wnoise[::400] = 2.1
-    train["y"]
-    return train, train_wnoise
-
-
-@app.cell
-def _(np, plt, signal, train_wnoise):
-    _, ax_hp = plt.subplots(figsize=(8, 4))
-    ax_hp.scatter(np.arange(12880) + 1, train_wnoise, s=1)
-    ax_hp.plot(train_wnoise, label="original signal", alpha=0.5)
-    ax_hp.plot(
-        signal.medfilt(train_wnoise, 3), label="median filtered signal", alpha=0.8
-    )
-    ax_hp.legend()
-    ax_hp.set(xlim=[0, 14000], ylim=[-1, 2.5])
-    # plt.savefig("../images/filter-med.png")
-    plt.show()
-    return (ax_hp,)
-
-
-@app.cell
-def _(np):
-    def hampel(x, k, n_sigma=3):
-        arraySize = len(x)
-        idx = np.arange(arraySize)
-        output_x = x.copy()
-        output_idx = np.zeros_like(x)
-
-        for i in range(arraySize):
-            mask1 = np.where(idx >= (idx[i] - k), True, False)
-            mask2 = np.where(idx <= (idx[i] + k), True, False)
-            kernel = np.logical_and(mask1, mask2)
-            median = np.median(x[kernel])
-            std = 1.4826 * np.median(np.abs(x[kernel] - median))
-            if np.abs(x[i] - median) > n_sigma * std:
-                output_idx[i] = 1
-                output_x[i] = median
-
-        return output_x, output_idx.astype(bool)
-    return (hampel,)
-
-
-@app.cell
-def _(hampel, np, pd, plt, train_wnoise):
-    train_noise = pd.Series(train_wnoise.tolist())
-    train_wnoise_imp, _ = hampel(train_noise, k=11 // 2, thr=3)
-    train_wnoise_out, train_wnoise_out_idx = hampel(train_noise, k=11 // 2, thr=20)
-    _, ax_hp2 = plt.subplots(figsize=(8, 4))
-    ax_hp2.plot(train_wnoise, label="original signal", alpha=0.5)
-    ax_hp2.scatter(np.arange(12880) + 1, train_wnoise, s=3)
-    ax_hp2.plot(train_wnoise_imp, label="Hampel filtered signal", alpha=0.8)
-    # ax_hp2.scatter(
-    #     train_wnoise_out,
-    #     train_wnoise[np.array(train_wnoise_out_idx)],
-    #     c="w",
-    #     marker="s",
-    #     edgecolors="black",
-    #     label="outliers",
-    # )
-    ax_hp2.legend()
-    # plt.savefig("../images/filter-hampel.png")
-    return (
-        ax_hp2,
-        train_noise,
-        train_wnoise_imp,
-        train_wnoise_out,
-        train_wnoise_out_idx,
-    )
-
-
-@app.cell
-def _(mo):
     mo.md(r"""### Integration""")
     return
 
@@ -553,15 +474,13 @@ def _(mo):
 @app.cell
 def _(integrate, np, patches, plt):
     # Generate velocity data
-    vel = np.hstack(
-        (
-            np.arange(10) ** 2,
-            np.ones(4) * 9**2,
-            np.arange(9, 4, -1) ** 2,
-            np.ones(3) * 5**2,
-            np.arange(5, 0, -1) ** 2,
-        )
-    )
+    vel = np.hstack((
+        np.arange(10) ** 2,
+        np.ones(4) * 9**2,
+        np.arange(9, 4, -1) ** 2,
+        np.ones(3) * 5**2,
+        np.arange(5, 0, -1) ** 2,
+    ))
     time = np.arange(len(vel))
 
     ## Plot the data
@@ -722,9 +641,7 @@ def _(interpolate, np):
         if periodic:
             kv = np.arange(-degree, count + degree + 1)
             factor, fraction = divmod(count + degree + 1, count)
-            cv = np.roll(
-                np.concatenate((cv,) * factor + (cv[:fraction],)), -1, axis=0
-            )
+            cv = np.roll(np.concatenate((cv,) * factor + (cv[:fraction],)), -1, axis=0)
             degree = np.clip(degree, 1, degree)
 
         # Opened curve
@@ -738,21 +655,20 @@ def _(interpolate, np):
         spline_data = spl(np.linspace(0, max_param, n))
 
         return spline_data
+
     return (scipy_bspline,)
 
 
 @app.cell
 def _(np, plt, scipy_bspline):
-    cv = np.array(
-        [
-            [50.0, 25.0],
-            [59.0, 12.0],
-            [50.0, 10.0],
-            [57.0, 2.0],
-            [40.0, 4.0],
-            [40.0, 14.0],
-        ]
-    )
+    cv = np.array([
+        [50.0, 25.0],
+        [59.0, 12.0],
+        [50.0, 10.0],
+        [57.0, 2.0],
+        [40.0, 4.0],
+        [40.0, 14.0],
+    ])
 
     _, ax_sp2 = plt.subplots(figsize=(8, 4))
     ax_sp2.plot(cv[:, 0], cv[:, 1], "o-", label="Control Points")
@@ -790,7 +706,6 @@ def _(np, stats):
         for ii in range(len(data)):
             ax.plot([data, data], [0, -0.005], "b")
 
-
     def plot_normdist(ax, pos, sd, xcum, ycum):
         """Plot individual curves"""
 
@@ -805,7 +720,6 @@ def _(np, stats):
         for ii in range(len(xir)):
             ycum[xcr == xir[ii]] += y[ii]
         return ycum
-
 
     def explain_KDE(ax, data):
         """Right plot: Explanation of KDE"""
@@ -830,6 +744,7 @@ def _(np, stats):
         # Plot cumulative curve
         ycum /= np.sum(ycum) / 10
         ax.plot(xcum, ycum)
+
     return explain_KDE, plot_histogram, plot_normdist
 
 
@@ -942,6 +857,7 @@ def _(ndimage, np, plt, ski):
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 
