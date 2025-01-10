@@ -10,7 +10,7 @@ def _():
     import numpy as np
     import skimage as ski
     from matplotlib import patches
-    from scipy import integrate, interpolate, ndimage, signal, stats, io
+    from scipy import integrate, interpolate, io, ndimage, signal, stats
     from statsmodels.nonparametric.smoothers_lowess import lowess
     return (
         integrate,
@@ -35,82 +35,6 @@ def _(mo):
 
 @app.cell
 def _(mo):
-    mo.md(r"""### Moving Average""")
-    return
-
-
-@app.cell
-def _(io, np, signal):
-    tempC = io.loadmat("../data/bostemp.mat")
-    coef_24h = np.ones(24) / 24
-    zi = signal.lfilter_zi(coef_24h, 1) * 0
-    avg24hTempC, _ = signal.lfilter(coef_24h, 1, tempC["tempC"].flatten(), zi=zi)
-    zi
-    return avg24hTempC, coef_24h, tempC, zi
-
-
-@app.cell
-def _(avg24hTempC, coef_24h, np, plt, tempC):
-    days = (np.arange(31 * 24) + 1) / 24
-    fDelay = (coef_24h.size - 1) / 2
-    _, ax_ma = plt.subplots(figsize=(8, 4))
-    ax_ma.plot(days, tempC["tempC"], linewidth=0.6, label="Hourly Temp")
-    ax_ma.plot(days, avg24hTempC, linewidth=0.6, label="24 Hour Average (delayed)")
-    ax_ma.plot(
-        days - fDelay / 24, avg24hTempC, linewidth=0.6, label="24 Hour Average"
-    )
-    ax_ma.legend()
-    ax_ma.set(
-        title="Logan Airport Dry Bulb Temperature (source: NOAA)",
-        xlabel="Time elapsed from Jan 1, 2011 (days)",
-        ylabel="Temp ($ ^∘ $C)",
-    )
-    # plt.savefig("../images/filter-ma.png")
-    plt.show()
-    return ax_ma, days, fDelay
-
-
-@app.cell
-def _(avg24hTempC, np, plt, tempC):
-    deltaTempC = tempC["tempC"].flatten() - avg24hTempC
-    _, ax_d = plt.subplots()
-    ax_d.plot(np.arange(24) + 1, np.mean(deltaTempC.reshape(31, 24), 0))
-    ax_d.set(
-        title="Mean temperature differential from 24 hour average",
-        xlabel="Hour of day (since midnight)",
-        ylabel="Temperature difference ($ ^\circ $C)",
-    )
-    return ax_d, deltaTempC
-
-
-@app.cell
-def _(days, interpolate, plt, signal, tempC):
-    envHigh_index, _ = signal.find_peaks(tempC["tempC"].flatten(), distance=16)
-    envHigh = interpolate.UnivariateSpline(
-        days[envHigh_index], tempC["tempC"][envHigh_index].flatten(), s=0
-    )
-    envLow_index, _ = signal.find_peaks(-tempC["tempC"].flatten(), distance=16)
-    envLow = interpolate.UnivariateSpline(
-        days[envLow_index], tempC["tempC"][envLow_index].flatten(), s=0
-    )
-    envMean = (envHigh(days) + envLow(days)) / 2
-
-    _, ax_p = plt.subplots()
-    ax_p.plot(days, tempC["tempC"], linewidth=0.6, label="Hourly Temp")
-    ax_p.plot(days, envHigh(days), linewidth=0.6, label="High")
-    ax_p.plot(days, envMean, linewidth=0.6, label="Mean")
-    ax_p.plot(days, envLow(days), linewidth=0.6, label="Low")
-    ax_p.legend()
-    ax_p.set(
-        title="Logan Airport Dry Bulb Temperature (source: NOAA)",
-        xlabel="Time elapsed from Jan 1, 2011 (days)",
-        ylabel="Temp ($^∘$C)",
-    )
-    return ax_p, envHigh, envHigh_index, envLow, envLow_index, envMean
-
-
-@app.cell
-def _(mo):
     mo.md(r"""### Linear Time Invariant Filter""")
     return
 
@@ -121,8 +45,6 @@ def _(np, plt, signal):
     xx = np.zeros(20)
     xx[5] = 1
     tt = np.arange(20)
-
-    # Put the results into a Python-dictionary
     data = {}
     data["before"] = xx
     data["after_fir"] = signal.lfilter(np.ones(5) / 5, 1, xx)
@@ -209,7 +131,6 @@ def _(aa, bb, np, plt, signal):
     for x_, xlabel, ax_ in zip(xs, xlabels, axs.flatten()):
         # Find the impulse-response
         y_ = signal.lfilter(bb, aa, x_)
-
         # Plot input and response
         ax_.plot(x_, "*-", label=xlabel)
         ax_.plot(y_, "*-", label="Response")
@@ -219,7 +140,6 @@ def _(aa, bb, np, plt, signal):
 
     axs[1].set(xlabel="n * T")
     # plt.savefig("../images/filter-response.png")
-    plt.show()
     return ax_, axs, xImpulse, xStep, x_, xlabel, xlabels, xs, y_
 
 
@@ -309,38 +229,38 @@ def _(aa, bb, np, plt, selFreq_w, signal):
 
     # Estimate gain and phase-shift from the location of the second maximum
     # First find the two maxima (input and output)
-    secondCycle = np.where((t > 1 / freq) & (t < (2 / freq)))[0]
+    sndCycle = np.where((t > 1 / freq) & (t < (2 / freq)))[0]
 
-    secondMaxIn = np.max(sin_in[secondCycle])
-    indexSecondMaxIn = np.argmax(sin_in[secondCycle])
-    tMaxIn = t[secondCycle[indexSecondMaxIn]]
+    sndMaxIn = np.max(sin_in[sndCycle])
+    idxSndMaxIn = np.argmax(sin_in[sndCycle])
+    tMaxIn = t[sndCycle[idxSndMaxIn]]
 
-    secondMaxFiltered = np.max(sin_out[secondCycle])
-    indexSecondMaxFiltered = np.argmax(sin_out[secondCycle])
-    tMaxOut = t[secondCycle[indexSecondMaxFiltered]]
+    sndMaxFiltered = np.max(sin_out[sndCycle])
+    idxSndMaxInFiltered = np.argmax(sin_out[sndCycle])
+    tMaxOut = t[sndCycle[idxSndMaxInFiltered]]
 
     # Estimate gain and phase-shift from them
-    gain_est = secondMaxFiltered / secondMaxIn
+    gain_est = sndMaxFiltered / sndMaxIn
     phase_est = (tMaxIn - tMaxOut) * 360 * freq
 
     # Plot them
-    ax2.plot(tMaxIn, secondMaxIn, "b*")
-    ax2.plot(tMaxOut, secondMaxFiltered, "r*")
+    ax2.plot(tMaxIn, sndMaxIn, "b*")
+    ax2.plot(tMaxOut, sndMaxFiltered, "r*")
     # plt.savefig("../images/filter-response-nyq.png")
     plt.show()
     return (
         ax2,
         freq,
         gain_est,
-        indexSecondMaxFiltered,
-        indexSecondMaxIn,
+        idxSndMaxIn,
+        idxSndMaxInFiltered,
         phase_est,
         rate,
-        secondCycle,
-        secondMaxFiltered,
-        secondMaxIn,
         sin_in,
         sin_out,
+        sndCycle,
+        sndMaxFiltered,
+        sndMaxIn,
         t,
         tMaxIn,
         tMaxOut,
@@ -357,7 +277,190 @@ def _(gain_est, np, phase_est, selFreq_h, selPhase):
 
 @app.cell
 def _(mo):
+    mo.md(r"""## Moving Average""")
+    return
+
+
+@app.cell
+def _(io, np, signal):
+    tempC = io.loadmat("../data/bostemp.mat")
+    coef_24h = np.ones(24) / 24
+    zi = signal.lfilter_zi(coef_24h, 1) * 0
+    avg24hTempC, _ = signal.lfilter(coef_24h, 1, tempC["tempC"].flatten(), zi=zi)
+    zi
+    return avg24hTempC, coef_24h, tempC, zi
+
+
+@app.cell
+def _(avg24hTempC, coef_24h, np, plt, tempC):
+    days = (np.arange(31 * 24) + 1) / 24
+    fDelay = (coef_24h.size - 1) / 2
+    _, ax_ma = plt.subplots(figsize=(8, 4))
+    ax_ma.plot(days, tempC["tempC"], label="Hourly Temp")
+    ax_ma.plot(days, avg24hTempC, label="24 Hour Average (delayed)")
+    ax_ma.plot(days - fDelay / 24, avg24hTempC, label="24 Hour Average")
+    ax_ma.legend()
+    ax_ma.set(
+        title="Logan Airport Dry Bulb Temperature (source: NOAA)",
+        xlabel="Time elapsed from Jan 1, 2011 (days)",
+        ylabel="Temp ($ ^∘ $C)",
+    )
+    # plt.savefig("../images/filter-ma.png")
+    return ax_ma, days, fDelay
+
+
+@app.cell
+def _(avg24hTempC, np, plt, tempC):
+    deltaTempC = tempC["tempC"].flatten() - avg24hTempC
+    _, ax_d = plt.subplots()
+    ax_d.plot(np.arange(24) + 1, np.mean(deltaTempC.reshape(31, 24), 0))
+    ax_d.set(
+        title="Mean temperature differential from 24 hour average",
+        xlabel="Hour of day (since midnight)",
+        ylabel="Temperature difference ($ ^\circ $C)",
+    )
+    return ax_d, deltaTempC
+
+
+@app.cell
+def _(days, interpolate, plt, signal, tempC):
+    highIdx, _ = signal.find_peaks(tempC["tempC"].flatten(), distance=16)
+    envHigh = interpolate.UnivariateSpline(
+        days[highIdx], tempC["tempC"][highIdx].flatten(), s=0
+    )
+    lowIdx, _ = signal.find_peaks(-tempC["tempC"].flatten(), distance=16)
+    envLow = interpolate.UnivariateSpline(
+        days[lowIdx], tempC["tempC"][lowIdx].flatten(), s=0
+    )
+    envMean = (envHigh(days) + envLow(days)) / 2
+
+    _, ax_p = plt.subplots(figsize=(8, 4))
+    ax_p.plot(days, tempC["tempC"], label="Hourly Temp")
+    ax_p.plot(days, envHigh(days), label="High")
+    ax_p.plot(days, envMean, label="Mean")
+    ax_p.plot(days, envLow(days), label="Low")
+    ax_p.legend()
+    ax_p.set(
+        title="Logan Airport Dry Bulb Temperature (source: NOAA)",
+        xlabel="Time elapsed from Jan 1, 2011 (days)",
+        ylabel="Temp ($^∘$C)",
+    )
+    # plt.savefig("../images/filter-peaks.png")
+    return ax_p, envHigh, envLow, envMean, highIdx, lowIdx
+
+
+@app.cell
+def _(ax_p, days, np, plt, signal, tempC):
+    h_b = np.array([1 / 2, 1 / 2])
+    binomCoef = signal.convolve(h_b, h_b)
+    for n in range(4):
+        binomCoef = signal.convolve(binomCoef, h_b)
+    zi_b = signal.lfilter_zi(binomCoef, 1) * 0
+    binomMA, _ = signal.lfilter(binomCoef, 1, tempC["tempC"].flatten(), zi=zi_b)
+
+    fDelay_b = (len(binomCoef) - 1) / 2
+    _, ax_b = plt.subplots(figsize=(8, 4))
+    ax_b.plot(days, tempC["tempC"], label="Hourly Temp")
+    ax_b.plot(
+        days - fDelay_b / 24,
+        binomMA,
+        label="Binomial Weighted Average",
+    )
+    ax_b.legend()
+    ax_p.set(
+        title="Logan Airport Dry Bulb Temperature (source: NOAA)",
+        xlabel="Time elapsed from Jan 1, 2011 (days)",
+        ylabel="Temp ($^∘$C)",
+    )
+    # plt.savefig("../images/filter-binom.png")
+    return ax_b, binomCoef, binomMA, fDelay_b, h_b, n, zi_b
+
+
+@app.cell
+def _(binomMA, days, fDelay, np, plt, signal, tempC):
+    alpha = 0.45
+    zi_ex = signal.lfilter_zi(np.array([alpha]), np.array([1, alpha - 1])) * 0
+    exponMA, _ = signal.lfilter(
+        np.array([alpha]),
+        np.array([1, alpha - 1]),
+        tempC["tempC"].flatten(),
+        zi=zi_ex,
+    )
+    _, ax_ex = plt.subplots(figsize=(8, 4))
+    ax_ex.plot(days, tempC["tempC"], label="Hourly Temp")
+    ax_ex.plot(days - fDelay / 24, binomMA, label="Binomial Weighted Average")
+    ax_ex.plot(days - 1 / 24, exponMA, label="Expon Weighted Average")
+    ax_ex.legend()
+    ax_ex.set(
+        title="Logan Airport Dry Bulb Temperature (source: NOAA)",
+        xlabel="Time elapsed from Jan 1, 2011 (days)",
+        ylabel="Temp ($^∘$C)",
+    )
+    # plt.savefig("../images/filter-expon.png")
+    return alpha, ax_ex, exponMA, zi_ex
+
+
+@app.cell
+def _(binomMA, days, exponMA, fDelay_b, plt, tempC):
+    _, ax_ex1 = plt.subplots(figsize=(8, 4))
+    ax_ex1.plot(days, tempC["tempC"], label="Hourly Temp")
+    ax_ex1.plot(
+        days - fDelay_b / 24,
+        binomMA,
+        label="Binomial Weighted Average",
+    )
+    ax_ex1.plot(days - 1 / 24, exponMA, label="Exponential Weighted Average")
+    ax_ex1.legend()
+    ax_ex1.set(
+        title="Logan Airport Dry Bulb Temperature (source: NOAA)",
+        xlabel="Time elapsed from Jan 1, 2011 (days)",
+        ylabel="Temp ($^∘$C)",
+        xlim=[3, 4],
+        ylim=[-5, 2],
+    )
+    plt.show()
+    return (ax_ex1,)
+
+
+@app.cell
+def _(mo):
     mo.md(r"""## Smoothing of Regularly Sampled Data""")
+    return
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""### Savitzky-Golay Filter""")
+    return
+
+
+@app.cell
+def _(days, plt, signal, tempC):
+    cubicMA = signal.savgol_filter(tempC["tempC"].flatten(), 7, 3)
+    quarticMA = signal.savgol_filter(tempC["tempC"].flatten(), 7, 4)
+    quinticMA = signal.savgol_filter(tempC["tempC"].flatten(), 9, 5)
+
+    _, ax_sg = plt.subplots(figsize=(8, 4))
+    ax_sg.plot(days, tempC["tempC"], label="Hourly Temp")
+    ax_sg.plot(days, cubicMA, label="Cubic-Weighted MA")
+    ax_sg.plot(days, quarticMA, label="Quartic-Weighted MA")
+    ax_sg.plot(days, quinticMA, label="Quintic-Weighted MA")
+    ax_sg.legend()
+    ax_sg.set(
+        title="Logan Airport Dry Bulb Temperature (source: NOAA)",
+        xlabel="Time elapsed from Jan 1, 2011 (days)",
+        ylabel="Temp ($^∘$C)",
+        xlim=[3, 4],
+        ylim=[-5, 2],
+    )
+    # plt.savefig("../images/filer-savgol.png")
+    plt.show()
+    return ax_sg, cubicMA, quarticMA, quinticMA
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""### Integration""")
     return
 
 
@@ -397,7 +500,6 @@ def _(integrate, np, patches, plt):
         axs2[1].add_patch(patches.Polygon(data_stack2))
         axs2[1].add_patch(patches.Polygon(data_stack2, fill=False))
     axs2[1].set(ylabel="Velocity [m/s]")
-    # p = patch(xverts, yverts, "b", "LineWidth", 1.5)
 
     axs2[2].plot(time, np.hstack([0, integrate.cumulative_trapezoid(vel)]))
     axs2[2].set(xlabel="Time [s]", ylabel="Distance [m]", xlim=[0, len(vel) - 1])
@@ -626,15 +728,15 @@ def _(np, stats):
         xcum = np.arange(-6, 11, 0.1)
         ycum = np.zeros_like(xcum)
 
-        # Width of the individual Gaussians
+        # Width of the individual Gaussian
         var = 2.25
         sd = np.sqrt(var)
 
-        # Plot individual Gaussians
+        # Plot individual Gaussian
         ax.set(xlim=(-6, 11), ylim=(-0.005, 0.18))
         ax.axhline(0)
 
-        # Rugplot & individual Gaussians
+        # Rugplot & individual Gaussian
         for ii in range(len(data)):
             ax.plot([data, data], [0, -0.005], "b")
             ycum = plot_normdist(ax, data[ii], sd, xcum, ycum)

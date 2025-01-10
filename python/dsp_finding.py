@@ -116,7 +116,7 @@ def _(io, np, plt, signal, threshold):
 
     # Plot3: show where the absolute velocity exceeds the threshold
     is_fast = eye_vel_abs > threshold
-    ax_f[2, 0].plot(is_fast[my_domain], "o-", ms=2)  # 'ms' is short for 'markersize'
+    ax_f[2, 0].plot(is_fast[my_domain], "o-", ms=2)
     ax_f[2, 0].set(ylabel="Above threshold")
     ax_f[2, 0].margins(x=0)
 
@@ -132,7 +132,7 @@ def _(io, np, plt, signal, threshold):
     ax_f[1, 1].set(ylabel="Start / Stop")
     ax_f[1, 1].margins(x=0)
 
-    ax_f[2, 1].axis("off")  # removes the empty axis to the lower right
+    ax_f[2, 1].axis("off")
     plt.show()
     return (
         ax_f,
