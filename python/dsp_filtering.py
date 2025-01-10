@@ -8,19 +8,25 @@ app = marimo.App(width="medium")
 def _():
     import matplotlib.pyplot as plt
     import numpy as np
+    import pandas as pd
     import skimage as ski
     from matplotlib import patches
+    from numba import jit, njit, prange
     from scipy import integrate, interpolate, io, ndimage, signal, stats
     from statsmodels.nonparametric.smoothers_lowess import lowess
     return (
         integrate,
         interpolate,
         io,
+        jit,
         lowess,
         ndimage,
+        njit,
         np,
         patches,
+        pd,
         plt,
+        prange,
         signal,
         ski,
         stats,
@@ -456,6 +462,86 @@ def _(days, plt, signal, tempC):
     # plt.savefig("../images/filer-savgol.png")
     plt.show()
     return ax_sg, cubicMA, quarticMA, quinticMA
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""### Hampel Filter""")
+    return
+
+
+@app.cell
+def _(io):
+    train = io.loadmat("../data/train.mat")
+    train_wnoise = train["y"].flatten()
+    train_wnoise[::400] = 2.1
+    train["y"]
+    return train, train_wnoise
+
+
+@app.cell
+def _(np, plt, signal, train_wnoise):
+    _, ax_hp = plt.subplots(figsize=(8, 4))
+    ax_hp.scatter(np.arange(12880) + 1, train_wnoise, s=1)
+    ax_hp.plot(train_wnoise, label="original signal", alpha=0.5)
+    ax_hp.plot(
+        signal.medfilt(train_wnoise, 3), label="median filtered signal", alpha=0.8
+    )
+    ax_hp.legend()
+    ax_hp.set(xlim=[0, 14000], ylim=[-1, 2.5])
+    # plt.savefig("../images/filter-med.png")
+    plt.show()
+    return (ax_hp,)
+
+
+@app.cell
+def _(np):
+    def hampel(x, k, n_sigma=3):
+        arraySize = len(x)
+        idx = np.arange(arraySize)
+        output_x = x.copy()
+        output_idx = np.zeros_like(x)
+
+        for i in range(arraySize):
+            mask1 = np.where(idx >= (idx[i] - k), True, False)
+            mask2 = np.where(idx <= (idx[i] + k), True, False)
+            kernel = np.logical_and(mask1, mask2)
+            median = np.median(x[kernel])
+            std = 1.4826 * np.median(np.abs(x[kernel] - median))
+            if np.abs(x[i] - median) > n_sigma * std:
+                output_idx[i] = 1
+                output_x[i] = median
+
+        return output_x, output_idx.astype(bool)
+    return (hampel,)
+
+
+@app.cell
+def _(hampel, np, pd, plt, train_wnoise):
+    train_noise = pd.Series(train_wnoise.tolist())
+    train_wnoise_imp, _ = hampel(train_noise, k=11 // 2, thr=3)
+    train_wnoise_out, train_wnoise_out_idx = hampel(train_noise, k=11 // 2, thr=20)
+    _, ax_hp2 = plt.subplots(figsize=(8, 4))
+    ax_hp2.plot(train_wnoise, label="original signal", alpha=0.5)
+    ax_hp2.scatter(np.arange(12880) + 1, train_wnoise, s=3)
+    ax_hp2.plot(train_wnoise_imp, label="Hampel filtered signal", alpha=0.8)
+    # ax_hp2.scatter(
+    #     train_wnoise_out,
+    #     train_wnoise[np.array(train_wnoise_out_idx)],
+    #     c="w",
+    #     marker="s",
+    #     edgecolors="black",
+    #     label="outliers",
+    # )
+    ax_hp2.legend()
+    # plt.savefig("../images/filter-hampel.png")
+    return (
+        ax_hp2,
+        train_noise,
+        train_wnoise_imp,
+        train_wnoise_out,
+        train_wnoise_out_idx,
+    )
 
 
 @app.cell

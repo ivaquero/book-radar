@@ -8,6 +8,72 @@
   doc,
 )
 
+= 常用预处理技术
+
+== 去趋势
+
+去趋势是一种常见的预处理技术，用于消除数据中的趋势。趋势是数据中的长期变化，通常由数据中的周期性或线性变化引起。去趋势的目的是消除这种长期变化，以便更好地分析数据的短期变化。
+
+== 去干扰
+
+=== Butterworth 滤波器
+
+Butterworth 滤波器旨在在通带中具有尽可能平坦的频率响应。因此，它也被称为“最大平坦幅度”滤波器。它可以用作低通、高通或带通滤波器。
+
+#alert[
+  警告：请小心低滤波器频率的高阶（n ≥ 4）Butterworth 滤波器，其中，$[b,a]$语法可能会因舍入误差而导致数值问题。在这种情况下，应使用“SOS”（second-order sections）语法，这是 IIR 滤波器的推荐形式或“ZPK”（zero-pole-gain）语法。
+]
+
+- 根据应用的不同，其他频率响应可能更可取。如，Chebyshev 滤波器提供比 Butterworth 滤波器更锐利的频率响应，而 Bessel 滤波器的优点是在时域中不会出现过冲（overshoot）。
+- 为了将数据拟合到参数模型，使用原始数据几乎总是比使用预平滑数据更好，因为平滑已经丢弃了可用信息。
+
+== 去峰值
+
+=== Hampel 滤波器
+
+中值滤波器会去除尖峰，但同时也会去除原始信号的大量数据点。Hampel 滤波器的工作原理类似于中值滤波器，但它仅替换与局部中位数值相差几倍标准差的值。
+
+```python
+def hampel(x, k, n_sigma=3):
+    """
+    x: pandas series of values from which to remove outliers
+    k: size of window/2
+    n_sigma: number of standard deviations to use; 3 is standard
+    """
+    arraySize = len(x)
+    idx = np.arange(arraySize)
+    output_x = x.copy()
+    output_idx = np.zeros_like(x)
+
+    for i in range(arraySize):
+        mask1 = np.where(idx >= (idx[i] - k), True, False)
+        mask2 = np.where(idx <= (idx[i] + k), True, False)
+        kernel = np.logical_and(mask1, mask2)
+        median = np.median(x[kernel])
+        std = 1.4826 * np.median(np.abs(x[kernel] - median))
+        if np.abs(x[i] - median) > n_sigma * std:
+            output_idx[i] = 1
+            output_x[i] = median
+
+    return output_x, output_idx.astype(bool)
+```
+
+#sgrid(
+  figure(
+    image("images/filter-med.png", width: 90%),
+    caption: "中值滤波器",
+  ),
+  figure(
+    image("images/filter-hampel.png", width: 90%),
+    caption: "Hampel 滤波器",
+  ),
+  columns: (200pt,) * 2,
+  gutter: 2pt,
+  caption: "",
+)
+
+== 重采样
+
 = 图像滤波
 
 == 图像的色彩
@@ -140,7 +206,7 @@ $
 互相关是两个函数之间的滑动点积或滑动内积。互相关中的滤波器不经过反转，而是直接滑过函数$f$。$f$与$g$之间的交叉区域即是互相关。本质上是执行逐元素乘法和加法。
 
 #figure(
-  image("images/filer-conv-corr.png", width: 40%),
+  image("images/filter-conv-corr.png", width: 40%),
   caption: "卷积 vs 互相关 vs 自相关",
   supplement: [图],
 )
