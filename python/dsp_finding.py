@@ -9,9 +9,9 @@ def _():
     import matplotlib.pyplot as plt
     import numpy as np
     import pandas as pd
-    import skimage as ski
     from scipy import interpolate, io, signal
-    return interpolate, io, np, pd, plt, signal, ski
+
+    return (interpolate, io, np, pd, plt, signal)
 
 
 @app.cell
@@ -230,6 +230,7 @@ def _(np):
                 output_x[i] = median
 
         return output_x, output_idx.astype(bool)
+
     return (hampel,)
 
 
@@ -237,9 +238,7 @@ def _(np):
 def _(hampel, np, pd, plt, train_wnoise):
     train_noise = pd.Series(train_wnoise.tolist())
     train_wnoise_imp, _ = hampel(train_noise, k=11 // 2, n_sigma=3)
-    train_wnoise_out, train_wnoise_out_idx = hampel(
-        train_noise, k=11 // 2, n_sigma=20
-    )
+    train_wnoise_out, train_wnoise_out_idx = hampel(train_noise, k=11 // 2, n_sigma=20)
     _, ax_hp2 = plt.subplots(figsize=(8, 4))
     ax_hp2.plot(train_wnoise, label="original signal", alpha=0.5)
     ax_hp2.scatter(np.arange(12880) + 1, train_wnoise, s=3)
@@ -376,9 +375,7 @@ def _(io, np, plt, signal, threshold):
     ax_f[0, 1].margins(x=0)
 
     # Plot5: Find the start and end of each movement
-    start_stop = np.diff(
-        is_fast * 1
-    )  # "*1": to convert boolean signal to numerical
+    start_stop = np.diff(is_fast * 1)  # "*1": to convert boolean signal to numerical
     ax_f[1, 1].plot(start_stop[close_domain])
     ax_f[1, 1].set(ylabel="Start / Stop")
     ax_f[1, 1].margins(x=0)
@@ -406,8 +403,8 @@ def _(mo):
 
 
 @app.cell
-def _(plt, ski):
-    camera = ski.data.camera()
+def _(plt):
+    camera = plt.imread("../data/camera.png")
     bright_threshold = 120
     is_bright = camera > bright_threshold
     plt.imshow(is_bright)
@@ -511,6 +508,7 @@ def _(np, plt):
 
             # Update the plot
             plt.draw()
+
     return (corr_vis,)
 
 
@@ -626,6 +624,7 @@ def _(interpolate, np, plt):
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 

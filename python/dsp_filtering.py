@@ -9,7 +9,6 @@ def _():
     import matplotlib.pyplot as plt
     import numpy as np
     import pandas as pd
-    import skimage as ski
     from matplotlib import patches
     from numba import jit, njit, prange
     from scipy import integrate, interpolate, io, ndimage, signal, stats
@@ -29,7 +28,6 @@ def _():
         plt,
         prange,
         signal,
-        ski,
         stats,
     )
 
@@ -779,8 +777,8 @@ def _(mo):
 
 
 @app.cell
-def _(ski):
-    img = ski.data.astronaut()
+def _(plt):
+    img = plt.imread("../data/astronaut.png")
     img.shape
     return (img,)
 
@@ -816,8 +814,8 @@ def _(mo):
 
 
 @app.cell
-def _(ndimage, np, plt, ski):
-    cam = ski.data.camera()
+def _(ndimage, np, plt):
+    cam = plt.imread("../data/camera.png")
 
     # for the filtering, the data must not be uint
     img_f = np.array(cam, dtype=float)
