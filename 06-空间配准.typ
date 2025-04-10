@@ -1,10 +1,10 @@
-#import "lib/sci-book.typ": *
+#import "@preview/qooklet:0.1.1": *
 #show: doc => conf(
   title: "空间配准",
-  author: ("SZZX"),
+  author: "SZZX",
   footer-cap: "SZZX",
   header-cap: "雷达基础知识手册",
-  outline-on: false,
+  lang: "zh",
   doc,
 )
 

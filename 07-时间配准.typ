@@ -1,10 +1,10 @@
-#import "lib/sci-book.typ": *
+#import "@preview/qooklet:0.1.1": *
 #show: doc => conf(
   title: "时间配准",
-  author: ("SZZX"),
+  author: "SZZX",
   footer-cap: "SZZX",
   header-cap: "雷达基础知识手册",
-  outline-on: false,
+  lang: "zh",
   doc,
 )
 
@@ -21,7 +21,7 @@
   儒略日（Julia Day，JD）是指从公元前 4713 年 1 月 1 日 12 时开始连续计算得出的天数（不满一日的部分用小数表示）。儒略日中的天数被称为儒略日数（JDN）。
 ]
 
-#alert[
+#warning[
   儒略日 ≠ 儒略历。
 
   前者是法国学者 Joseph Justus Scaliger（1540～1609）设计的一种历法，后者是由罗马共和国独裁官 Gaius Iulius Caesar 在公元前45年1月1日颁布的历法。
