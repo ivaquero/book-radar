@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+#import "@local/scibook:0.1.0": *
+#show: doc => conf(
+||||||| 3bffbea
 #import "lib/sci-book.typ": *
 #show: doc => conf(
+=======
+#import "@preview/qooklet:0.2.0": *
+#show: qooklet.with(
+>>>>>>> 541da1d0404719384d9b514f3827ce9961804b3e
   title: "空间配准",
-  author: ("SZZX"),
+  author: "SZZX",
   footer-cap: "SZZX",
   header-cap: "雷达基础知识手册",
-  outline-on: false,
-  doc,
+  lang: "zh",
 )
 
 = 全球坐标系
