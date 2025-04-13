@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-#import "@local/scibook:0.1.0": *
-#show: doc => conf(
-||||||| 3bffbea
-#import "lib/sci-book.typ": *
-#show: doc => conf(
-=======
 #import "@preview/qooklet:0.2.0": *
 #show: qooklet.with(
->>>>>>> 541da1d0404719384d9b514f3827ce9961804b3e
   title: "雷达方程",
   author: "SZZX",
   footer-cap: "SZZX",
@@ -27,106 +19,9 @@
 
 == 波段划分
 
+#let data = csv("data/radar-freq.csv")
 #figure(
-<<<<<<< HEAD
-  xlsx-parser(
-    read("data/radar.xlsx", encoding: none),
-    parse-table-style: false,
-    parse-stroke: false,
-    stroke: frame(rgb("000")),
-||||||| 3bffbea
-  table(
-    columns: 8,
-    align: center,
-    inset: 4pt,
-    stroke: frame(rgb("000")),
-    table.header(
-      [*频率*],
-      [*波长*],
-      [*IEEE*],
-      [*NATO*],
-      [*频率*],
-      [*波长*],
-      [*IEEE*],
-      [*NATO*],
-    ),
-    [3Hz],
-    [#l3 km],
-    table.cell(rowspan: 2)[HF],
-    table.cell(rowspan: 3)[A],
-    [8GHz],
-    [#eval(g8)mm],
-    table.cell(rowspan: 3)[X],
-    [I],
-    [3MHz],
-    [#eval(m3)m],
-    [10GHz],
-    [#eval(g10)mm],
-    table.cell(rowspan: 4)[J],
-    [30MHz],
-    [#eval(m30)m],
-    table.cell(rowspan: 2)[VHF],
-    [12GHz],
-    [#eval(g12)mm],
-    [250MHz],
-    [#eval(m250)m],
-    table.cell(rowspan: 2)[B],
-    [18GHz],
-    [#eval(g18)mm],
-    [Kᵤ],
-    [300MHz],
-    [#eval(m300)m],
-    table.cell(rowspan: 2)[UHF],
-    [20GHz],
-    [#eval(g20)mm],
-    table.cell(rowspan: 2)[K],
-    [500MHz],
-    [#eval(m500)m],
-    [C],
-    [27GHz],
-    [#eval(g27)mm],
-    table.cell(rowspan: 3)[K],
-    [1GHz],
-    [#eval(g1)m],
-    [L],
-    [D],
-    [30GHz],
-    [#eval(g30)mm],
-    table.cell(rowspan: 2)[Kₐ],
-    [2GHz],
-    [#eval(g2)m],
-    table.cell(rowspan: 2)[S],
-    [E],
-    [40GHz],
-    [#eval(g40)mm],
-    [3GHz],
-    [#eval(g3)m],
-    [F],
-    [60GHz],
-    [#eval(g60)mm],
-    table.cell(rowspan: 2)[V],
-    [L],
-    [4GHz],
-    [#eval(g4)mm],
-    table.cell(rowspan: 2)[C],
-    [G],
-    [75GHz],
-    [#eval(g75)mm],
-    table.cell(rowspan: 2)[M],
-    [6GHz],
-    [#eval(g6)mm],
-    [H],
-    [100GHz],
-    [#eval(g100)mm],
-    [W],
-=======
-  xlsx-parser(
-    read("data/radar.xlsx", encoding: none),
-    parse-table-style: false,
-    parse-stroke: false,
-    stroke: three-line(rgb("000")),
->>>>>>> 541da1d0404719384d9b514f3827ce9961804b3e
-  ),
+  ktable(data, 11),
   caption: "频率与波段",
   supplement: "表",
   kind: table,
@@ -140,29 +35,10 @@
 
 根据不同波段电磁波的特性，雷达被用于不同的场景。
 
+#let data = csv("data/radar-waveband.csv")
 #figure(
-<<<<<<< HEAD
-  xlsx-parser(
-    read("data/radar.xlsx", encoding: none),
-    parse-table-style: false,
-    parse-stroke: false,
-    stroke: frame(rgb("000")),
-    sheet-index: 1,
-  ),
+  ktable(data, 6),
   caption: "不同波段的应用",
-||||||| 3bffbea
-  ktable(csv1, 5),
-  caption: [不同波段的应用],
-=======
-  xlsx-parser(
-    read("data/radar.xlsx", encoding: none),
-    parse-table-style: false,
-    parse-stroke: false,
-    stroke: three-line(rgb("000")),
-    sheet-index: 1,
-  ),
-  caption: "不同波段的应用",
->>>>>>> 541da1d0404719384d9b514f3827ce9961804b3e
   supplement: "表",
   kind: table,
 )
@@ -187,29 +63,10 @@ $
 
 #pagebreak()
 
+#let data = csv("data/radar-target.csv")
 #figure(
-<<<<<<< HEAD
-  xlsx-parser(
-    read("data/radar.xlsx", encoding: none),
-    parse-table-style: false,
-    parse-stroke: false,
-    stroke: frame(rgb("000")),
-    sheet-index: 2,
-  ),
+  ktable(data, 5),
   caption: "目标特性",
-||||||| 3bffbea
-  ktable(csv1, 4),
-  caption: [目标特性],
-=======
-  xlsx-parser(
-    read("data/radar.xlsx", encoding: none),
-    parse-table-style: false,
-    parse-stroke: false,
-    stroke: three-line(rgb("000")),
-    sheet-index: 2,
-  ),
-  caption: "目标特性",
->>>>>>> 541da1d0404719384d9b514f3827ce9961804b3e
   supplement: "表",
   kind: table,
 )
