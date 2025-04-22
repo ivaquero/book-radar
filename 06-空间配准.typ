@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-#import "@local/scibook:0.1.0": *
-#show: doc => conf(
-||||||| 3bffbea
-#import "lib/sci-book.typ": *
-#show: doc => conf(
-=======
 #import "@preview/qooklet:0.2.0": *
 #show: qooklet.with(
->>>>>>> 541da1d0404719384d9b514f3827ce9961804b3e
   title: "空间配准",
   author: "SZZX",
   footer-cap: "SZZX",
@@ -88,7 +80,6 @@ WGS 的最新版本为 WGS84，1984年定义，最后修订于2004年。
 = 坐标转换
 
 == Euler 角
-
 
 = 弹道学坐标系
 

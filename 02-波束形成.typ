@@ -1,13 +1,5 @@
-<<<<<<< HEAD
-#import "@local/scibook:0.1.0": *
-#show: doc => conf(
-||||||| 3bffbea
-#import "lib/sci-book.typ": *
-#show: doc => conf(
-=======
 #import "@preview/qooklet:0.2.0": *
 #show: qooklet.with(
->>>>>>> 541da1d0404719384d9b514f3827ce9961804b3e
   title: "波束形成",
   author: "SZZX",
   footer-cap: "SZZX",

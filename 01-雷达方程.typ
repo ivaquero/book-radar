@@ -27,8 +27,6 @@
   kind: table,
 )
 
-#pagebreak()
-
 == 波段应用
 
 雷达可分为陆基、机载、空载或舰载雷达系统。根据雷达的具体特性，如频段、天线类型和使用的波形，雷达还可分为许多类别。使用调制或其他连续波形的雷达系统被归类为连续波（Continuous Wave，CW）雷达，而使用有时间限制的脉冲波形的雷达系统被归类为脉冲雷达（Pulsed Radars）。
@@ -60,8 +58,6 @@ $
 $
   G_r = frac(ctext("定向功率密度"), ctext("同向功率密度")) = frac(A_("sphere"), A_("ant")) = frac(4π R^2, A_("ant")) ≈ frac(4π R^2, θ_("azi") θ_("ele")) = frac(4π R^2, (R λ)/b (R λ)/h) = frac(4π A, λ^2)
 $
-
-#pagebreak()
 
 #let data = csv("data/radar-target.csv")
 #figure(
