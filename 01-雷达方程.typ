@@ -1,4 +1,4 @@
-#import "@preview/qooklet:0.2.0": *
+#import "lib/lib.typ": *
 #show: qooklet.with(
   title: "雷达方程",
   author: "SZZX",
@@ -47,16 +47,16 @@
 
 $
   P_r &= frac(P_t G^2 λ^2 σ F, (4π)^3 R^4 L)\
-  &= underbrace((P_t G_t)/(4π R^2), ctext("发射能量密度"))
-  ⋅ underbrace(σ/L, ctext("有效反射面积"))
-  ⋅ underbrace(F/(4π R^2), ctext("距离衰减"))
-  ⋅ underbrace((G_r λ^2)/(4π), ctext("有效接收面积"))
+  &= underbrace((P_t G_t) / (4π R^2), ctext("发射能量密度"))
+  ⋅ underbrace(σ / L, ctext("有效反射面积"))
+  ⋅ underbrace(F / (4π R^2), ctext("距离衰减"))
+  ⋅ underbrace((G_r λ^2) / (4π), ctext("有效接收面积"))
 $
 
 其中，$P_t$和$P_r$分别为（雷达）峰值发射功率和峰值接收功率，$G_t$和$G_r$分别为（天线）发射增益和接收增益，$R$为（目标）探测距离，$σ$为雷达反射截面积（radar cross section，RCS），$L$为（系统）能量损失，$F$为传播因子，$λ$为信号波长。其中
 
 $
-  G_r = frac(ctext("定向功率密度"), ctext("同向功率密度")) = frac(A_("sphere"), A_("ant")) = frac(4π R^2, A_("ant")) ≈ frac(4π R^2, θ_("azi") θ_("ele")) = frac(4π R^2, (R λ)/b (R λ)/h) = frac(4π A, λ^2)
+  G_r = frac(ctext("定向功率密度"), ctext("同向功率密度")) = frac(A_("sphere"), A_("ant")) = frac(4π R^2, A_("ant")) ≈ frac(4π R^2, θ_("azi") θ_("ele")) = frac(4π R^2, (R λ) / b (R λ) / h) = frac(4π A, λ^2)
 $
 
 #let data = csv("data/radar-target.csv")

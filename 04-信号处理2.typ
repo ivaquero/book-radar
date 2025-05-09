@@ -1,4 +1,4 @@
-#import "@preview/qooklet:0.2.0": *
+#import "lib/lib.typ": *
 #show: qooklet.with(
   title: "信号处理2",
   author: "SZZX",
@@ -159,7 +159,7 @@ buttLoop = signal.filtfilt(nom, denom, x_volt.flatten())
 ```python
 def hampel(x, k, n_sigma=3):
     """
-    x: pandas series of values from which to remove outliers
+    x: series of values from which to remove outliers
     k: size of window/2
     n_sigma: number of standard deviations to use; 3 is standard
     """

@@ -8,10 +8,10 @@ app = marimo.App()
 def _():
     import matplotlib.pyplot as plt
     import numpy as np
-    import pandas as pd
+    import polars as pl
     from scipy import interpolate, io, signal
 
-    return interpolate, io, np, pd, plt, signal
+    return interpolate, io, np, pl, plt, signal
 
 
 @app.cell(hide_code=True)
@@ -235,7 +235,7 @@ def _(np):
 
 @app.cell
 def _(hampel, np, pd, plt, train_wnoise):
-    train_noise = pd.Series(train_wnoise.tolist())
+    train_noise = pl.Series(train_wnoise.tolist())
     train_wnoise_imp, _ = hampel(train_noise, k=11 // 2, n_sigma=3)
     train_wnoise_out, train_wnoise_out_idx = hampel(train_noise, k=11 // 2, n_sigma=20)
     _, ax_hp2 = plt.subplots(figsize=(8, 4))

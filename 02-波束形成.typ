@@ -1,4 +1,4 @@
-#import "@preview/qooklet:0.2.0": *
+#import "lib/lib.typ": *
 #show: qooklet.with(
   title: "波束形成",
   author: "SZZX",
