@@ -1,3 +1,8 @@
+#import "lib/lib.typ": *
+
+#cover(info)
+// #contents(depth: 1, lang: "zh")
+
 #let chapter(filename) = {
   include filename
   context counter(heading).update(0)
@@ -10,3 +15,4 @@
 #chapter("05-信号处理3.typ")
 #chapter("06-空间配准.typ")
 #chapter("07-时间配准.typ")
+#chapter("matlab-radar.typ")

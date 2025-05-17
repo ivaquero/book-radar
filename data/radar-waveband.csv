@@ -1,0 +1,15 @@
+,波段,波长,量级,释义,应用
+0,HF,100∼10,m,High Frequency,超视距雷达
+1,VHF,10∼1,,Very High Frequency,
+2,UHF,1∼0.3,,Ultra-High Frequency,预警雷达
+3,P,1.3∼0.3,,Previous,
+4,L,0.3∼0.15,,Long Wave,空中航路监视雷达
+5,S,0.15∼0.075,,Short Wave,机场监视雷达
+6,C,75∼37.5 ,mm,Compromise,气象雷达、火控雷达
+7,X,37.5∼25,,Crosshair,合成孔径雷达
+8,Kᵤ,25∼16.7,,Kurz-under,弹载雷达
+9,K,16.7∼11.1,,Kurz (German: short),场面监视雷达
+10,Kₐ,11.1∼7.5,,Kurz-above,机场地面探测设备
+11,V,7.5∼4,,,泊车雷达
+12,W,4∼2.7,,,
+13,G,2.7~1,,,

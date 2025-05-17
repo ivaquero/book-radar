@@ -1,18 +1,7 @@
-<<<<<<< HEAD
-#import "@local/scibook:0.1.0": *
-#show: doc => conf(
-||||||| 3bffbea
-#import "lib/sci-book.typ": *
-#show: doc => conf(
-=======
-#import "@preview/qooklet:0.2.0": *
-#show: qooklet.with(
->>>>>>> 541da1d0404719384d9b514f3827ce9961804b3e
+#import "lib/lib.typ": *
+#show: chapter-style.with(
   title: "时间配准",
-  author: "SZZX",
-  footer-cap: "SZZX",
-  header-cap: "雷达基础知识手册",
-  lang: "zh",
+  info: info,
 )
 
 = 时间配准

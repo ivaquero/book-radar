@@ -1,18 +1,7 @@
-<<<<<<< HEAD
-#import "@local/scibook:0.1.0": *
-#show: doc => conf(
-||||||| 3bffbea
-#import "lib/sci-book.typ": *
-#show: doc => conf(
-=======
-#import "@preview/qooklet:0.2.0": *
-#show: qooklet.with(
->>>>>>> 541da1d0404719384d9b514f3827ce9961804b3e
+#import "lib/lib.typ": *
+#show: chapter-style.with(
   title: "空间配准",
-  author: "SZZX",
-  footer-cap: "SZZX",
-  header-cap: "雷达基础知识手册",
-  lang: "zh",
+  info: info,
 )
 
 = 全球坐标系
@@ -38,7 +27,7 @@ WGS 的最新版本为 WGS84，1984年定义，最后修订于2004年。
 - X 轴：赤道平面内，指向赤道与本初子午线的交点；
 - Y 轴：与前两者构成 Descartian 右手坐标系。
 
-#theorem("地球相关常数")[
+#theorem(title: "地球相关常数")[
   - 长半径：$a = 6,378,137±2 m$
   - 短半径：$b = 6,356,752±2 m$
   - 极扁率：$f = (a-b)\/a = 1\/298.257223563$
@@ -88,7 +77,6 @@ WGS 的最新版本为 WGS84，1984年定义，最后修订于2004年。
 = 坐标转换
 
 == Euler 角
-
 
 = 弹道学坐标系
 

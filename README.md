@@ -22,25 +22,6 @@
 为保证正常编译，请参考 [typst-packages](https://github.com/typst/packages) 上的说明，在如下路径下克隆 `typst-packages` 仓库
 
 - Linux：
-<<<<<<< HEAD
-  - `$XDG_DATA_HOME/typst`
-  - `~/.local/share/typst`
-- macOS：`~/Library/Application Support/typst`
-- Windows：`%APPDATA%/typst`
-
-### 使用模版
-
-在上述路径下克隆 [scibook](https://github.com/ivaquero/scibook)，然后在文档中引用
-
-```typst
-#import "@local/scibook:0.1.0": *
-```
-||||||| 3bffbea
-  - `$XDG_DATA_HOME/typst`
-  - `~/.local/share/typst`
-- macOS：`~/Library/Application Support/typst`
-- Windows：`%APPDATA%/typst`
-=======
   - `$XDG_DATA_HOME`
   - `~/.local/share`
 - macOS：`~/Library/Application Support`
@@ -54,6 +35,5 @@ git clone --depth 1 --branch main https://github.com/typst/packages typst
 ### 使用模版
 
 ```typst
-#import "@preview/qooklet:0.2.0": *
+#import "@preview/qooklet:0.4.0": *
 ```
->>>>>>> 541da1d0404719384d9b514f3827ce9961804b3e

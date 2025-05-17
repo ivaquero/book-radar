@@ -1,0 +1,12 @@
+,频率,波长,量级,IEEE,NATO,频率,波长,量级,IEEE,NATO
+0,3Hz,100000,km,HF,A,8GHz,37.5,mm,X,I
+1,3MHz,100,m,,,10GHz,30,,,J
+2,30MHz,10,,VHF,,12GHz,25,,,
+3,250MHz,1.2,,,B,18GHz,16.7,,Kᵤ,
+4,300MHz,1,,UHF,,20GHz,15,,K,
+5,500MHz,0.6,,,C,27GHz,11.1,,,K
+6,1GHz,0.3,,L,D,30GHz,10,,Kₐ,
+7,2GHz,0.15,,S,E,40GHz,7.5,,,
+8,3GHz,0.1,,,F,60GHz,5,,V,L
+9,4GHz,75,mm,C,G,75GHz,4,,,M
+10,6GHz,50,,,H,100GHz,3,,W,
