@@ -1,7 +1,7 @@
 #import "lib/lib.typ": *
 
 #cover(info)
-// #contents(depth: 1, lang: "zh")
+#contents(depth: 1, info: info)
 
 #let chapter(filename) = {
   include filename
