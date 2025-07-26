@@ -1,8 +1,5 @@
 #import "lib/lib.typ": *
-#show: chapter-style.with(
-  title: "时间配准",
-  info: info,
-)
+#show: chapter-style.with(title: "时间配准", info: info)
 
 = 时间配准
 <时间配准>

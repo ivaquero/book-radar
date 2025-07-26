@@ -1,8 +1,5 @@
 #import "lib/lib.typ": *
-#show: chapter-style.with(
-  title: "信号处理3",
-  info: info,
-)
+#show: chapter-style.with(title: "信号处理3", info: info)
 
 = 频谱信号分析
 
@@ -11,7 +8,7 @@
 Fourier 变换可以将信号从时域变换到频域。对如下真实声音的信号
 
 $
-  "signal" = "offset" + ∑_(i = 0)^2 a_i * sin(ω_i * t) + "noise"
+  "signal" = "offset" + sum_(i = 0)^2 a_i * sin(ω_i * t) + "noise"
 $
 
 @sound 中的左图显示了声波的压力随时间的变化。放大（中）我们可以看到一些重复的模式，但仍然不清楚发生了什么。然而，查看相同的数据作为频率的函数（右）可以得到更简单的图像：作为频率函数的信号的简单、规则的结构表明该信号可能是来自弦乐器的声音，其频率内容通常由基频的倍数组成。在这个例子中，采集者敲击了钢琴上的一个琴键，产生了 440 Hz 的音调。
@@ -68,8 +65,8 @@ $\
 由此可知，正弦波和余弦波可以用$e^(j 2π f t)$和$e^(-j 2π f t)$来表示
 
 $
-  cos(2π f t) &= frac(1, 2)(e^(j 2π f t) + e^(-j 2π f t)) \
-  sin(2π f t) &= frac(1, 2 j)(e^(j 2π f t) - e^(-j 2π f t))
+  cos(2π f t) & = frac(1, 2)(e^(j 2π f t) + e^(-j 2π f t))   \
+  sin(2π f t) & = frac(1, 2 j)(e^(j 2π f t) - e^(-j 2π f t))
 $
 
 又由
@@ -119,7 +116,7 @@ $
 实际测量信号永远不会是无限的。它们总是有开始和结束。使用 Fourier 级数，可将这样的信号变成“周期性的”无限信号。Fourier 级数表明，每个周期函数都可以分解为频率为基频倍数的正弦波的总和：
 
 $
-  x(t) = a_0 + ∑_(n = 1)^∞ [a_n * cos(2π n f_p t) + b_n * sin(2π n f_p t)]
+  x(t) = a_0 + sum_(n = 1)^∞ [a_n * cos(2π n f_p t) + b_n * sin(2π n f_p t)]
 $
 
 基频$f_p$由下式确定：
@@ -131,7 +128,7 @@ $
 其中，$T_P$是数据集的持续时间，即一个“周期”的持续时间。同样，Fourier 级数可以用更简洁的复数符号表示
 
 $
-  x(t) = ∑_(n = -∞)^∞ X_n * e^(j 2π n f_p t) = ∑_(n = -∞)^∞ X_n * e^(j 2π n frac(t, T_P))
+  x(t) = sum_(n = -∞)^∞ X_n * e^(j 2π n f_p t) = sum_(n = -∞)^∞ X_n * e^(j 2π n frac(t, T_P))
 $
 
 其中，$X_n$的值由下式给出
@@ -149,13 +146,13 @@ $
 若以恒定采样频率对$N$个数据点进行采样，则可以通过以下方式获得 Fourier 系数$F_n$：
 
 $
-  X_n = ∑_(τ = 0)^(N - 1) x_τ * e^(-j 2π frac(n⋅τ, N)) quad "with" n = 0, ⋯, N - 1
+  X_n = sum_(τ = 0)^(N - 1) x_τ * e^(-j 2π frac(n⋅τ, N)) quad "with" n = 0, ⋯, N - 1
 $ <four>
 
 逆 Fourier 变换由下式给出
 
 $
-  x_τ = frac(1, N) ∑_(n = 0)^(N - 1) X_n * e^(j 2π frac(n⋅τ, N)) quad "with" τ = 0, ⋯, N - 1
+  x_τ = frac(1, N) sum_(n = 0)^(N - 1) X_n * e^(j 2π frac(n⋅τ, N)) quad "with" τ = 0, ⋯, N - 1
 $ <four_inv>
 
 由于这些方程包含有限数量的离散数据点@four 和有限数量的离散波@four_inv，因此这种变换被称为离散 Fourier 变换（Discrete Fourier Transform，DFT）。
@@ -258,7 +255,7 @@ $
 
 对于短信号，可以使用@firf 直接有效地计算卷积。
 
-$ y(n) = ∑_(i = 0)^k w_i x(n - i) $ <firf>
+$ y(n) = sum_(i = 0)^k w_i x(n - i) $ <firf>
 
 但对于较长的信号，通过 Fourier 变换计算会更有效。其基础由卷积定理给出：
 

@@ -1,8 +1,5 @@
 #import "lib/lib.typ": *
-#show: chapter-style.with(
-  title: "信号处理",
-  info: info,
-)
+#show: chapter-style.with(title: "信号处理", info: info)
 
 = 滤波器
 
@@ -38,7 +35,7 @@ $ G = 20 log_10 (frac(a_("out"), a_("int"))) "dB" $
 
 对$k$阶 FIR 滤波器，输出由最后$k + 1$个输入的加权和确定，权重为$w_k$
 
-$ y(n) = ∑_(i = 0)^k w_i x(n - i) $ <fir>
+$ y(n) = sum_(i = 0)^k w_i x(n - i) $ <fir>
 
 这可以看作是一个移动窗口滤波器（moving window filter），它在输入数据点上从头到尾移动。这类滤波器通常被称为“有限脉冲响应”（FIR）滤波器。
 
@@ -50,7 +47,7 @@ $ y(n) = w(k) * x(n) $
 
 虽然 FIR 滤波器的输出仅取决于输入信号（@fir），但滤波器的一般输出也可能取决于输出信号的$m$个最新值：
 
-$ ∑_(j = 0)^m a_j * y(n - j) = ∑_(i = 0)^k b_i * x(n - i) $ <iir>
+$ sum_(j = 0)^m a_j * y(n - j) = sum_(i = 0)^k b_i * x(n - i) $ <iir>
 
 其中，$a_0 = 1$。系数$a_i$和$b_j$确定唯一的滤波器，这类滤波器通常被称为“无限脉冲响应”（IIR）滤波器。也可以写作
 
@@ -98,10 +95,7 @@ ax1.plot(x_filt[1:], label="average")
 ax1.plot(x_med, label="median")
 ```
 
-#figure(
-  image("images/filter-morph.png", width: 40%),
-  caption: "形态滤波器",
-)
+#figure(image("images/filter-morph.png", width: 40%), caption: "形态滤波器")
 
 = 移动平均平滑
 
@@ -130,10 +124,7 @@ ax_ma.plot(days, avg24hTempC, label="24 Hour Average (delayed)")
 ax_ma.plot(days - fDelay / 24, avg24hTempC, label="24 Hour Average")
 ```
 
-#figure(
-  image("images/filter-ma.png", width: 50%),
-  caption: "移动平均滤波器",
-)
+#figure(image("images/filter-ma.png", width: 50%), caption: "移动平均滤波器")
 
 可以通过最值来表征数据的变化。
 
@@ -155,10 +146,7 @@ ax_p.plot(days, envMean, label="Mean")
 ax_p.plot(days, envLow(days), label="Low")
 ```
 
-#figure(
-  image("images/filter-peaks.png", width: 50%),
-  caption: "包络图",
-)
+#figure(image("images/filter-peaks.png", width: 50%), caption: "包络图")
 
 == 二项式滤波器
 
@@ -183,10 +171,7 @@ ax_b.plot(
 ax_b.legend()
 ```
 
-#figure(
-  image("images/filter-binom.png", width: 50%),
-  caption: "二项式滤波器",
-)
+#figure(image("images/filter-binom.png", width: 50%), caption: "二项式滤波器")
 
 == 指数滤波器
 
@@ -208,10 +193,7 @@ ax_ex.plot(days - fDelay / 24, binomMA, label="Binomial Weighted Average")
 ax_ex.plot(days - 1 / 24, exponMA, label="Expon Weighted Average")
 ```
 
-#figure(
-  image("images/filter-expon.png", width: 50%),
-  caption: "指数滤波器",
-)
+#figure(image("images/filter-expon.png", width: 50%), caption: "指数滤波器")
 
 = 定期采样数据
 
@@ -221,24 +203,21 @@ ax_ex.plot(days - 1 / 24, exponMA, label="Expon Weighted Average")
 
 Savitzky-Golay 滤波器将$q$阶多项式拟合到周围$2m + 1$个数据点，并使用其中心的值作为该点的输出。为了计算输入信号的一阶导数，采用拟合多项式中心的倾角；对二阶导数，采用曲率等。Savitzky-Golay 滤波器的优点之一是只需确定滤波器系数$w$一次，因为其不依赖于输入信号。
 \
-#block(
-  height: 13em,
-  columns()[
-    Savitzky-Golay 滤波器的主要步骤为
-    + 选定$x$值
-    + 选择一个关于$x$的对称窗口
-    + 计算与这些数据拟合的最佳多项式
-    + 取点
-      - 对平滑，取拟合曲线的中心点；
-      - 对一阶导数，取该位置的切线；
-      - 对二阶导数、取曲率；
-    Savitzky–Golay 滤波器需要以下参数
-    + 数据窗口的大小（奇数）
-    + 多项式拟合的阶数（严格小于窗口大小）
-    + 导数阶数（0为平滑，1为导数）
-    + 采样率（Hz）
-  ],
-)
+#block(height: 13em, columns()[
+  Savitzky-Golay 滤波器的主要步骤为
+  + 选定$x$值
+  + 选择一个关于$x$的对称窗口
+  + 计算与这些数据拟合的最佳多项式
+  + 取点
+    - 对平滑，取拟合曲线的中心点；
+    - 对一阶导数，取该位置的切线；
+    - 对二阶导数、取曲率；
+  Savitzky–Golay 滤波器需要以下参数
+  + 数据窗口的大小（奇数）
+  + 多项式拟合的阶数（严格小于窗口大小）
+  + 导数阶数（0为平滑，1为导数）
+  + 采样率（Hz）
+])
 
 - Savitzky-Golay 滤波器的优点：计算高阶导数非常方便；平滑和求导可以同时进行。
 - Savitzky-Golay 滤波器的缺点：没有清晰的频率响应。即，增益仅随着频率的增加而逐渐减小。
@@ -301,7 +280,7 @@ $
 为了分别从线加速度和速度获得线速度和位置，必须对这些数据进行积分：
 
 $
-  "vel"(t) &= "vel"(t_0) + ∫_(t_0)^t "acc"(t^′) dd(t^′)
+  "vel"(t) & = "vel"(t_0) + ∫_(t_0)^t "acc"(t^′) dd(t^′)
 $ <vel>
 
 $
@@ -322,7 +301,7 @@ $ <pos>
 当处理离散数据时，积分只能近似确定。将$t_0$和$t$之间的时间分成$n$个宽度为$Δ t$的相等元素，结果是
 
 $
-  𝒙(t_n) = ∑_(i = 1)^n 𝒙_i
+  𝒙(t_n) = sum_(i = 1)^n 𝒙_i
 $
 
 测量离散时间$t_i (i = 0, ..., n)$处的加速度，@vel2 和@acc2 必须用离散方程代替：
@@ -384,7 +363,7 @@ $
 一个等级$p$的 B 样条$C(u)，u ∈ [τ_p, τ_(n−p−1)]$，，具有结向量$τ$和控制点（也称 DeBoor 点）$P_i (i = 0, ..., n − p − 2)$由下式给出
 
 $
-  C(u) = ∑_(i = 0)^(n - p - 2) P_i B_(i, p)(u)
+  C(u) = sum_(i = 0)^(n - p - 2) P_i B_(i, p)(u)
 $
 
 其中，$B_(i, p)$ 是移至$i$点的@bspline 中的$b^p$。由于按照惯例，@bspline 中的第一个样条$b^0$被称为“1 阶 B 样条”，因此“阶 n”B 样条包含$n − 1$次多项式。
@@ -420,7 +399,7 @@ $
 
 类似于 1D 中的 FIR 的滤波也可以对 2D 信号（如图像）执行。我们现在有一个 2D 输入和一个权重矩阵，而不是一维输入和权重向量。影响滤波器输出的像素周围的区域有时称为“结构元素”（structural element，SE）。它不一定是正方形，也可以是矩形、圆形或椭圆形。输出仍然是通过对输入的加权求和得到：
 
-$ y(n, m) = ∑_(i = - k)^k ∑_(j = -l)^l w_(i j) * x(n + i, m + j) $
+$ y(n, m) = sum_(i = - k)^k sum_(j = -l)^l w_(i j) * x(n + i, m + j) $
 
 移动窗口解释仍然成立，除了：
 - 窗口和数据在两个维度上扩展

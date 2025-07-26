@@ -1,8 +1,5 @@
 #import "lib/lib.typ": *
-#show: chapter-style.with(
-  title: "波束形成",
-  info: info,
-)
+#show: chapter-style.with(title: "波束形成", info: info)
 
 = 相控阵
 
@@ -18,23 +15,20 @@
 
 相控阵由以下部件组成：
 
-#block(
-  height: 6em,
-  columns(3)[
-    - 发射
-      - 波形生成
-      - 发射机
-      - 发射阵列
-    - 模型
-      - 环境
-      - 目标
-      - 干扰
-    - 接收
-      - 接收阵列
-      - 接收机
-      - 信号处理
-  ],
-)
+#block(height: 6em, columns(3)[
+  - 发射
+    - 波形生成
+    - 发射机
+    - 发射阵列
+  - 模型
+    - 环境
+    - 目标
+    - 干扰
+  - 接收
+    - 接收阵列
+    - 接收机
+    - 信号处理
+])
 
 = 数字波束形成
 
