@@ -33,8 +33,6 @@ function createSvg(w = 600, h = 600, svgId = "display") {
 	const svg = new Object();
 
 	svg.init = function () {
-		// this.msvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-		// document.body.appendChild(this.msvg);
 		this.msvg = elem(svgId);
 		this.msvg.innerHTML = ""; // Clear svg if exist
 		this.msvg.setAttribute("width", String(w));
@@ -76,7 +74,7 @@ function createSvg(w = 600, h = 600, svgId = "display") {
 		this.polarAxisArray = new Array();
 
 		const polarBorder = document.createElementNS(
-			"http://www.w3.org/2000/svg",
+			"http://w3.org/2000/svg",
 			"circle",
 		);
 		polarBorder.setAttribute("cx", String(this.polarCx));
@@ -100,7 +98,7 @@ function createSvg(w = 600, h = 600, svgId = "display") {
 
 		for (let i = 0; i < nSection; ++i) {
 			const grid = document.createElementNS(
-				"http://www.w3.org/2000/svg",
+				"http://w3.org/2000/svg",
 				"circle",
 			);
 			grid.setAttribute("cx", String(this.polarCx));
@@ -117,7 +115,7 @@ function createSvg(w = 600, h = 600, svgId = "display") {
 			this.msvg.appendChild(grid);
 
 			const text = document.createElementNS(
-				"http://www.w3.org/2000/svg",
+				"http://w3.org/2000/svg",
 				"text",
 			);
 			text.innerHTML = String(sectionStart + i * section);
@@ -136,7 +134,7 @@ function createSvg(w = 600, h = 600, svgId = "display") {
 		for (let i = 0; i < nAngleSction; ++i) {
 			let angle = angleSection * i;
 			const grid = document.createElementNS(
-				"http://www.w3.org/2000/svg",
+				"http://w3.org/2000/svg",
 				"line",
 			);
 			grid.setAttribute("x1", String(this.polarCx));
@@ -158,7 +156,7 @@ function createSvg(w = 600, h = 600, svgId = "display") {
 			this.msvg.appendChild(grid);
 
 			const text = document.createElementNS(
-				"http://www.w3.org/2000/svg",
+				"http://w3.org/2000/svg",
 				"text",
 			);
 			if (angle > 180) {
@@ -179,8 +177,8 @@ function createSvg(w = 600, h = 600, svgId = "display") {
 				"y",
 				String(
 					this.polarCx -
-						textR * Math.sin((angle / 180) * Math.PI) +
-						fontSize / 4,
+					textR * Math.sin((angle / 180) * Math.PI) +
+					fontSize / 4,
 				),
 			);
 			text.setAttribute("fill", this.yellowColor);
@@ -198,7 +196,7 @@ function createSvg(w = 600, h = 600, svgId = "display") {
 			this.setPolarAxis();
 		}
 		this.polarScatters = document.createElementNS(
-			"http://www.w3.org/2000/svg",
+			"http://w3.org/2000/svg",
 			"polyline",
 		);
 		this.polarPointStr = "";
@@ -227,7 +225,7 @@ function createSvg(w = 600, h = 600, svgId = "display") {
 			}
 		}
 		const polarPoints = document.createElementNS(
-			"http://www.w3.org/2000/svg",
+			"http://w3.org/2000/svg",
 			"polyline",
 		);
 		polarPoints.setAttribute("points", this.polarPointStr);
@@ -257,7 +255,7 @@ function createSvg(w = 600, h = 600, svgId = "display") {
 		}
 		const x1 = this.polarCx + this.polarR * Math.cos((phaseDg * Math.PI) / 180);
 		const y1 = this.polarCy - this.polarR * Math.sin((phaseDg * Math.PI) / 180);
-		const arc = document.createElementNS("http://www.w3.org/2000/svg", "path");
+		const arc = document.createElementNS("http://w3.org/2000/svg", "path");
 		let pathStr = `M ${x0} ${y0} A `;
 		pathStr += [rx, ry, rotation, large_arc_flag, sweep_flag, x1, y1].join(" ");
 		arc.setAttribute("d", pathStr);
@@ -271,7 +269,7 @@ function createSvg(w = 600, h = 600, svgId = "display") {
 		phaseDg,
 		styleStr = "stroke:white;stroke-width:2.0;stroke-opacity:1.0",
 	) {
-		const grid = document.createElementNS("http://www.w3.org/2000/svg", "line");
+		const grid = document.createElementNS("http://w3.org/2000/svg", "line");
 		grid.setAttribute("x1", String(this.polarCx));
 		grid.setAttribute("y1", String(this.polarCy));
 		grid.setAttribute(
@@ -337,7 +335,7 @@ function createSvg(w = 600, h = 600, svgId = "display") {
 
 	svg.drawAntPoint = function (cx, cy) {
 		const circle = document.createElementNS(
-			"http://www.w3.org/2000/svg",
+			"http://w3.org/2000/svg",
 			"circle",
 		);
 		circle.setAttribute("cx", String(cx));
@@ -377,7 +375,7 @@ function createSvg(w = 600, h = 600, svgId = "display") {
 		const sweep_flag = 0;
 		const x1 = this.polarCx;
 		const y1 = this.polarCy + coverR;
-		const arc = document.createElementNS("http://www.w3.org/2000/svg", "path");
+		const arc = document.createElementNS("http://w3.org/2000/svg", "path");
 		let pathStr = `M ${x0} ${y0} A `;
 		pathStr += [rx, ry, rotation, large_arc_flag, sweep_flag, x1, y1].join(" ");
 		arc.setAttribute("d", pathStr);
