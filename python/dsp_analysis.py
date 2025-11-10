@@ -1,36 +1,37 @@
 import marimo
 
-__generated_with = "0.13.0"
-app = marimo.App()
+__generated_with = "0.17.7"
+app = marimo.App(width="full")
 
 
 @app.cell
 def _():
-    from typing import Tuple
-
     import matplotlib.pyplot as plt
     import numpy as np
     from numpy import fft
     from scipy import io, signal
-
-    return Tuple, fft, io, np, plt, signal
+    return fft, io, np, plt, signal
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Spectral Signal Analysis""")
+    mo.md(r"""
+    ## Spectral Signal Analysis
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Transforming Data""")
+    mo.md(r"""
+    ### Transforming Data
+    """)
     return
 
 
 @app.cell
-def _(Tuple, np):
-    def generate_data() -> Tuple[np.ndarray, float, np.ndarray, np.ndarray]:
+def _(np):
+    def generate_data():
         """Generate sample data for the FFT-demo
         Signal is a  superposition of three sine waves.
 
@@ -66,15 +67,12 @@ def _(Tuple, np):
         sig_with_noise = sig_without_noise + noise_amp * np.random.randn(len(sig))
 
         return (t, dt, sig_with_noise, sig_without_noise)
-
     return (generate_data,)
 
 
 @app.cell
 def _(np, plt):
-    def power_spectrum(
-        t: np.ndarray, dt: float, sig: np.ndarray, sig_ideal: np.ndarray
-    ) -> None:
+    def power_spectrum(t, dt, sig, sig_ideal):
         """Demonstrate three different ways to calculate the power-spectrum
 
         Parameters
@@ -89,7 +87,9 @@ def _(np, plt):
         # From a quick look we learn - nothing
         axs[0].plot(t, sig, lw=0.7, label="noisy")
         axs[0].plot(t, sig_ideal, ls="dashed", lw=2, label="ideal")
-        axs[0].set(xlim=(0, 0.4), ylim=(-15, 25), xlabel="Time (s)", ylabel="Signal ()")
+        axs[0].set(
+            xlim=(0, 0.4), ylim=(-15, 25), xlabel="Time (s)", ylabel="Signal ()"
+        )
         axs[0].legend()
 
         # Calculate the spectrum by hand
@@ -104,7 +104,6 @@ def _(np, plt):
             xlim=(0, 35),
             yticklabels=[],
         )
-
     return (power_spectrum,)
 
 
@@ -119,9 +118,7 @@ def _(generate_data, plt, power_spectrum):
 
 @app.cell
 def _(np, plt):
-    def power_spectrum2(
-        t: np.ndarray, dt: float, sig: np.ndarray, sig_ideal: np.ndarray
-    ) -> None:
+    def power_spectrum2(t, dt: float, sig, sig_ideal):
         # Calculate the spectrum by hand
         fft_abs = np.abs(np.fft.fft(sig))
         # The easiest way to calculate the frequencies
@@ -138,7 +135,6 @@ def _(np, plt):
         axs[0].set(ylabel="Power (linear)")
         axs[1].semilogy(freq, Pxx)
         axs[1].set(xlabel="Frequency (Hz)", ylabel="Power (dB)")
-
     return (power_spectrum2,)
 
 
@@ -150,10 +146,8 @@ def _(data, plt, power_spectrum2):
 
 
 @app.cell
-def _(np, plt, signal):
-    def power_spectrum3(
-        t: np.ndarray, dt: float, sig: np.ndarray, sig_ideal: np.ndarray
-    ) -> None:
+def _(plt, signal):
+    def power_spectrum3(t, dt: float, sig, sig_ideal):
         # Periodogram and Welch-Periodogram
         f_pgram, P_pgram = signal.periodogram(sig, fs=1 / dt)
         f_welch, P_welch = signal.welch(sig, fs=100, nperseg=2**8)
@@ -166,7 +160,6 @@ def _(np, plt, signal):
         axs[0].legend()
         axs[1].set(xlabel="Frequency (Hz)", ylabel="Spectral Density (dB)")
         axs[1].legend()
-
     return (power_spectrum3,)
 
 
@@ -203,7 +196,6 @@ def _(io, np):
         Pxx = Pxx * 2 / (np.sum(Pxx) / duration)
 
         return time, a1, sound_rate, freq, Pxx, duration
-
     return (get_data,)
 
 
@@ -239,7 +231,6 @@ def _(np, plt):
         # Position the plots
         axs[0].set(position=[0.125, 0.11, 0.2, 0.775])
         axs[1].set(position=[0.35, 0.11, 0.2, 0.775])
-
     return (fourier_intro,)
 
 
@@ -253,13 +244,17 @@ def _(Pxx, fourier_intro, freq, plt, sound_data, time, time_slice):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Spectral Density Estimation""")
+    mo.md(r"""
+    ## Spectral Density Estimation
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Periodogram""")
+    mo.md(r"""
+    ### Periodogram
+    """)
     return
 
 
@@ -272,19 +267,14 @@ def _(plt):
         upper_limit = 4000
         axs[0].plot(freq, Pxx)
         axs[0].set(
-            xlim=[0, upper_limit],
-            xlabel="Frequency (Hz)",
-            ylabel="Power spectrum",
+            xlim=[0, upper_limit], xlabel="Frequency (Hz)", ylabel="Power spectrum"
         )
         axs[0].ticklabel_format(style="sci", scilimits=(0, 4))
 
         axs[1].semilogy(freq, Pxx, lw=0.5)
         axs[1].set(
-            xlim=[0, upper_limit],
-            xlabel="Frequency (Hz)",
-            ylabel="Power spectrum (dB)",
+            xlim=[0, upper_limit], xlabel="Frequency (Hz)", ylabel="Power spectrum (dB)"
         )
-
     return (linear_and_log,)
 
 
@@ -322,7 +312,6 @@ def _(freq, np, plt):
             xlabel="Frequency (Hz)",
             ylabel="Power spectrum (P**2/Hz)",
         )
-
     return (noise_effects,)
 
 
@@ -336,7 +325,9 @@ def _(Pxx, duration, noise_effects, plt, sound_data, time, time_slice):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Fourier Transformation, Convolution, and Cross-Correlation""")
+    mo.md(r"""
+    ## Fourier Transformation, Convolution, and Cross-Correlation
+    """)
     return
 
 
@@ -363,7 +354,6 @@ def _(np, plt, signal):
         axs[1].semilogy(f, welch, label="Welch")
         axs[1].set(xlim=[800, 1100], xlabel="Frequency (Hz)")
         axs[1].legend()
-
     return (welch_periodogram,)
 
 
@@ -377,13 +367,17 @@ def _(Pxx, freq, plt, rate, sound_data, welch_periodogram):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Time Dependent Fourier Transform""")
+    mo.md(r"""
+    ## Time Dependent Fourier Transform
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Windowing""")
+    mo.md(r"""
+    ### Windowing
+    """)
     return
 
 
@@ -404,7 +398,7 @@ def _(io, np, plt, signal, time):
     max_sound = np.max(a1[win_index])
 
     # Make the plots
-    fig, ax_w = plt.subplots(2, 2, constrained_layout=True)
+    _, ax_w = plt.subplots(2, 2, constrained_layout=True)
     # Sound
     ax_w[0, 0].plot(time_w, a1, lw=0.2)
     ax_w[0, 0].margins(x=0)
@@ -441,8 +435,8 @@ def _(io, np, plt, signal, time):
 
 
 @app.cell
-def _(Tuple, fft, np):
-    def powerSpect(data: np.ndarray, rate: float) -> Tuple:
+def _(fft, np):
+    def powerSpect(data, rate: float):
         """Powerspectrum, calculated via Fourier Transfrom
 
         Parameters
@@ -464,13 +458,12 @@ def _(Tuple, fft, np):
 
         nyq = int(len(Pxx) / 2)
         return (Pxx[:nyq], freq[:nyq])
-
     return (powerSpect,)
 
 
 @app.cell
 def _(np, powerSpect):
-    def showData(data: np.ndarray, rate: float, legend: str, axs) -> None:
+    def showData(data, rate: float, legend: str, axs):
         """Show data in time domain, and corresponding powerspectrum
 
         Parameters
@@ -489,7 +482,6 @@ def _(np, powerSpect):
 
         axs[1].plot(freq, Pxx, ".-", lw=0.5)
         axs[1].set(xlim=(1, 5000))
-
     return (showData,)
 
 
@@ -541,7 +533,6 @@ def _(np, plt, showData, signal):
 @app.cell
 def _():
     import marimo as mo
-
     return (mo,)
 
 

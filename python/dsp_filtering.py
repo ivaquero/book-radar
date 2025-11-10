@@ -1,7 +1,7 @@
 import marimo
 
-__generated_with = "0.13.0"
-app = marimo.App()
+__generated_with = "0.17.7"
+app = marimo.App(width="full")
 
 
 @app.cell
@@ -11,7 +11,6 @@ def _():
     from matplotlib import patches
     from scipy import integrate, interpolate, io, ndimage, signal, stats
     from statsmodels.nonparametric.smoothers_lowess import lowess
-
     return (
         integrate,
         interpolate,
@@ -28,13 +27,17 @@ def _():
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Filter Types""")
+    mo.md(r"""
+    ## Filter Types
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Linear Time Invariant Filter""")
+    mo.md(r"""
+    ### Linear Time Invariant Filter
+    """)
     return
 
 
@@ -64,7 +67,9 @@ def _(np, plt, signal):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Morphological Filter""")
+    mo.md(r"""
+    ### Morphological Filter
+    """)
     return
 
 
@@ -95,13 +100,17 @@ def _(np, plt, signal):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Filter Characteristics""")
+    mo.md(r"""
+    ## Filter Characteristics
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Impulse- and Step-Response""")
+    mo.md(r"""
+    ### Impulse- and Step-Response
+    """)
     return
 
 
@@ -144,7 +153,9 @@ def _(aa, bb, np, plt, signal):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Frequency Response""")
+    mo.md(r"""
+    ### Frequency Response
+    """)
     return
 
 
@@ -194,7 +205,9 @@ def _(aa, bb, np, plt, signal):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Moving Average""")
+    mo.md(r"""
+    ## Moving Average
+    """)
     return
 
 
@@ -254,7 +267,9 @@ def _(gain_est, np, phase_est, selFreq_h, selPhase):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Smoothing of Regularly Sampled Data""")
+    mo.md(r"""
+    ## Smoothing of Regularly Sampled Data
+    """)
     return
 
 
@@ -264,7 +279,7 @@ def _(io, np, signal):
     coef_24h = np.ones(24) / 24
     zi = signal.lfilter_zi(coef_24h, 1) * 0
     avg24hTempC, _ = signal.lfilter(coef_24h, 1, tempC["tempC"].flatten(), zi=zi)
-    zi
+    print(zi)
     return avg24hTempC, coef_24h, tempC
 
 
@@ -330,7 +345,7 @@ def _(days, interpolate, plt, signal, tempC):
 def _(ax_p, days, np, plt, signal, tempC):
     h_b = np.array([1 / 2, 1 / 2])
     binomCoef = signal.convolve(h_b, h_b)
-    for n in range(4):
+    for _ in range(4):
         binomCoef = signal.convolve(binomCoef, h_b)
     zi_b = signal.lfilter_zi(binomCoef, 1) * 0
     binomMA, _ = signal.lfilter(binomCoef, 1, tempC["tempC"].flatten(), zi=zi_b)
@@ -338,11 +353,7 @@ def _(ax_p, days, np, plt, signal, tempC):
     fDelay_b = (len(binomCoef) - 1) / 2
     _, ax_b = plt.subplots(figsize=(8, 4))
     ax_b.plot(days, tempC["tempC"], label="Hourly Temp")
-    ax_b.plot(
-        days - fDelay_b / 24,
-        binomMA,
-        label="Binomial Weighted Average",
-    )
+    ax_b.plot(days - fDelay_b / 24, binomMA, label="Binomial Weighted Average")
     ax_b.legend()
     ax_p.set(
         title="Logan Airport Dry Bulb Temperature (source: NOAA)",
@@ -358,10 +369,7 @@ def _(binomMA, days, fDelay, np, plt, signal, tempC):
     alpha = 0.45
     zi_ex = signal.lfilter_zi(np.array([alpha]), np.array([1, alpha - 1])) * 0
     exponMA, _ = signal.lfilter(
-        np.array([alpha]),
-        np.array([1, alpha - 1]),
-        tempC["tempC"].flatten(),
-        zi=zi_ex,
+        np.array([alpha]), np.array([1, alpha - 1]), tempC["tempC"].flatten(), zi=zi_ex
     )
     _, ax_ex = plt.subplots(figsize=(8, 4))
     ax_ex.plot(days, tempC["tempC"], label="Hourly Temp")
@@ -381,11 +389,7 @@ def _(binomMA, days, fDelay, np, plt, signal, tempC):
 def _(binomMA, days, exponMA, fDelay_b, plt, tempC):
     _, ax_ex1 = plt.subplots(figsize=(8, 4))
     ax_ex1.plot(days, tempC["tempC"], label="Hourly Temp")
-    ax_ex1.plot(
-        days - fDelay_b / 24,
-        binomMA,
-        label="Binomial Weighted Average",
-    )
+    ax_ex1.plot(days - fDelay_b / 24, binomMA, label="Binomial Weighted Average")
     ax_ex1.plot(days - 1 / 24, exponMA, label="Exponential Weighted Average")
     ax_ex1.legend()
     ax_ex1.set(
@@ -401,7 +405,9 @@ def _(binomMA, days, exponMA, fDelay_b, plt, tempC):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Savitzky-Golay Filter""")
+    mo.md(r"""
+    ### Savitzky-Golay Filter
+    """)
     return
 
 
@@ -431,24 +437,28 @@ def _(days, plt, signal, tempC):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Integration""")
+    mo.md(r"""
+    ### Integration
+    """)
     return
 
 
 @app.cell
 def _(integrate, np, patches, plt):
     # Generate velocity data
-    vel = np.hstack((
-        np.arange(10) ** 2,
-        np.ones(4) * 9**2,
-        np.arange(9, 4, -1) ** 2,
-        np.ones(3) * 5**2,
-        np.arange(5, 0, -1) ** 2,
-    ))
+    vel = np.hstack(
+        (
+            np.arange(10) ** 2,
+            np.ones(4) * 9**2,
+            np.arange(9, 4, -1) ** 2,
+            np.ones(3) * 5**2,
+            np.arange(5, 0, -1) ** 2,
+        )
+    )
     time = np.arange(len(vel))
 
     ## Plot the data
-    fig, axs2 = plt.subplots(3, 1, sharex=True)
+    _, axs2 = plt.subplots(3, 1, sharex=True)
 
     axs2[0].plot(time, vel, "*-")
     for ii in range(len(vel) - 1):
@@ -481,13 +491,17 @@ def _(integrate, np, patches, plt):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Smoothing of Irregularly Sampled Data""")
+    mo.md(r"""
+    ## Smoothing of Irregularly Sampled Data
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Lowess and Loess Smoothing""")
+    mo.md(r"""
+    ### Lowess and Loess Smoothing
+    """)
     return
 
 
@@ -517,7 +531,9 @@ def _(lowess, np, plt):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Splines""")
+    mo.md(r"""
+    ### Splines
+    """)
     return
 
 
@@ -559,9 +575,7 @@ def _(np, plt):
 
 @app.cell
 def _(interpolate, np):
-    def scipy_bspline(
-        cv, n: int = 100, degree: int = 3, periodic: bool = False
-    ) -> np.ndarray:
+    def bspline(cv, n: int = 100, degree: int = 3, periodic: bool = False):
         """Calculate n samples on a bspline
 
         Parameters
@@ -594,23 +608,23 @@ def _(interpolate, np):
         # Return samples
         max_param = count - (degree * (1 - periodic))
         spl = interpolate.BSpline(kv, cv, degree)
-        spline_data = spl(np.linspace(0, max_param, n))
 
-        return spline_data
-
-    return (scipy_bspline,)
+        return spl(np.linspace(0, max_param, n))
+    return (bspline,)
 
 
 @app.cell
-def _(np, plt, scipy_bspline):
-    cv = np.array([
-        [50.0, 25.0],
-        [59.0, 12.0],
-        [50.0, 10.0],
-        [57.0, 2.0],
-        [40.0, 4.0],
-        [40.0, 14.0],
-    ])
+def _(bspline, np, plt):
+    cv = np.array(
+        [
+            [50.0, 25.0],
+            [59.0, 12.0],
+            [50.0, 10.0],
+            [57.0, 2.0],
+            [40.0, 4.0],
+            [40.0, 14.0],
+        ]
+    )
 
     _, ax_sp2 = plt.subplots(figsize=(8, 4))
     ax_sp2.plot(cv[:, 0], cv[:, 1], "o-", label="Control Points")
@@ -619,7 +633,7 @@ def _(np, plt, scipy_bspline):
 
     # for degree in range(1,7):
     for degree in [1, 2, 3]:
-        p = scipy_bspline(cv, n=100, degree=degree, periodic=False)
+        p = bspline(cv, n=100, degree=degree, periodic=False)
         x_sp, y_sp = p.T
         ax_sp2.plot(x_sp, y_sp, label=f"Degree {degree}")
 
@@ -633,7 +647,9 @@ def _(np, plt, scipy_bspline):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Kernel Density Estimation""")
+    mo.md(r"""
+    ### Kernel Density Estimation
+    """)
     return
 
 
@@ -645,7 +661,7 @@ def _(np, stats):
         ax.hist(data, bins=6, range=[-4, 8], density=True, ec="k", fc="#AFDBFF")
         ax.set(xlim=(-6, 11), ylim=(-0.005, 0.18), ylabel=("Density"))
         # Add rugplot
-        for ii in range(len(data)):
+        for _ in range(len(data)):
             ax.plot([data, data], [0, -0.005], "b")
 
     def plot_normdist(ax, pos, sd, xcum, ycum):
@@ -686,7 +702,6 @@ def _(np, stats):
         # Plot cumulative curve
         ycum /= np.sum(ycum) / 10
         ax.plot(xcum, ycum)
-
     return explain_KDE, plot_histogram
 
 
@@ -710,20 +725,24 @@ def _(explain_KDE, np, plot_histogram, plt):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Filtering Images""")
+    mo.md(r"""
+    ## Filtering Images
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Astronaut""")
+    mo.md(r"""
+    ### Astronaut
+    """)
     return
 
 
 @app.cell
 def _(plt):
     img = plt.imread("../data/astronaut.png")
-    img.shape
+    print(img.shape)
     return (img,)
 
 
@@ -753,7 +772,9 @@ def _(img, np, plt):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Camera man""")
+    mo.md(r"""
+    ### Camera man
+    """)
     return
 
 
@@ -771,9 +792,7 @@ def _(ndimage, np, plt):
     Filters.append(Filters[-1].T)
 
     # Filter the images
-    filtered = []
-    for filt in Filters:
-        filtered.append(ndimage.correlate(img_f, filt))
+    filtered = [ndimage.correlate(img_f, filt) for filt in Filters]
 
     # Make the plots
     _, ax_is = plt.subplots(3, 2, figsize=(6, 8))
@@ -799,7 +818,6 @@ def _(ndimage, np, plt):
 @app.cell
 def _():
     import marimo as mo
-
     return (mo,)
 
 

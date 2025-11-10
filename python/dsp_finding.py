@@ -1,27 +1,28 @@
 import marimo
 
-__generated_with = "0.13.0"
-app = marimo.App()
+__generated_with = "0.17.7"
+app = marimo.App(width="full")
 
 
 @app.cell
 def _():
     import matplotlib.pyplot as plt
     import numpy as np
-    import polars as pl
     from scipy import interpolate, io, signal
 
-    return interpolate, io, np, pl, plt, signal
+    return interpolate, io, np, plt, signal
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Preprocessing""")
+    mo.md(r"""
+    ## Preprocessing
+    """)
     return
 
 
 @app.cell
-def _(io, np, plt):
+def _(io, plt):
     ecgl = io.loadmat("../data/ecgl.mat")
     ecgnl = io.loadmat("../data/ecgnl.mat")
 
@@ -41,7 +42,9 @@ def _(io, np, plt):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### De-trend""")
+    mo.md(r"""
+    ### De-trend
+    """)
     return
 
 
@@ -74,7 +77,9 @@ def _(io):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Butterworth""")
+    mo.md(r"""
+    ### Butterworth
+    """)
     return
 
 
@@ -149,25 +154,20 @@ def _(plt, signal, t_volt, x_volt):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Resampling""")
+    mo.md(r"""
+    ### Resampling
+    """)
     return
 
 
 @app.cell
 def _(Fs, np, plt, signal, x_volt):
     fsResamp = 1020
-    vResamp = signal.resample(
-        x_volt.flatten(),
-        int(x_volt.size / Fs * fsResamp),
-    )
+    vResamp = signal.resample(x_volt.flatten(), int(x_volt.size / Fs * fsResamp))
     tResamp = np.arange(vResamp.size) / fsResamp
     vAvgResamp = signal.savgol_filter(vResamp, 17, 1)
     _, ax_rs = plt.subplots(figsize=(8, 4))
-    ax_rs.plot(
-        tResamp,
-        vAvgResamp,
-        label="Moving average filter operating at 60 Hz",
-    )
+    ax_rs.plot(tResamp, vAvgResamp, label="Moving average filter operating at 60 Hz")
     ax_rs.set(
         xlabel="Time (s)",
         ylabel="Voltage (V)",
@@ -206,64 +206,25 @@ def _(np, plt, signal, train_wnoise):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Hampel Filter""")
-    return
-
-
-@app.cell
-def _(np):
-    def hampel(x, k, n_sigma=3):
-        arraySize = len(x)
-        idx = np.arange(arraySize)
-        output_x = x.copy()
-        output_idx = np.zeros_like(x)
-
-        for i in range(arraySize):
-            mask1 = np.where(idx >= (idx[i] - k), True, False)
-            mask2 = np.where(idx <= (idx[i] + k), True, False)
-            kernel = np.logical_and(mask1, mask2)
-            median = np.median(x[kernel])
-            std = 1.4826 * np.median(np.abs(x[kernel] - median))
-            if np.abs(x[i] - median) > n_sigma * std:
-                output_idx[i] = 1
-                output_x[i] = median
-
-        return output_x, output_idx.astype(bool)
-
-    return (hampel,)
-
-
-@app.cell
-def _(hampel, np, pd, plt, train_wnoise):
-    train_noise = pl.Series(train_wnoise.tolist())
-    train_wnoise_imp, _ = hampel(train_noise, k=11 // 2, n_sigma=3)
-    train_wnoise_out, train_wnoise_out_idx = hampel(train_noise, k=11 // 2, n_sigma=20)
-    _, ax_hp2 = plt.subplots(figsize=(8, 4))
-    ax_hp2.plot(train_wnoise, label="original signal", alpha=0.5)
-    ax_hp2.scatter(np.arange(12880) + 1, train_wnoise, s=3)
-    ax_hp2.plot(train_wnoise_imp, label="Hampel filtered signal", alpha=0.8)
-    # ax_hp2.scatter(
-    #     train_wnoise_out,
-    #     train_wnoise[np.array(train_wnoise_out_idx)],
-    #     c="w",
-    #     marker="s",
-    #     edgecolors="black",
-    #     label="outliers",
-    # )
-    ax_hp2.legend()
-    # plt.savefig("../images/filter-hampel.png")
+    mo.md(r"""
+    ### Hampel Filter
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Finding Simple Features""")
+    mo.md(r"""
+    ## Finding Simple Features
+    """)
     return
 
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Example 1: Find Large Signal Values in 1D-Data""")
+    mo.md(r"""
+    ### Example 1: Find Large Signal Values in 1D-Data
+    """)
     return
 
 
@@ -290,7 +251,7 @@ def _(np):
 @app.cell
 def _(data, duration, is_large, large_data, plt, threshold, time):
     # Plot the data
-    fig, axs = plt.subplots(3, 1)
+    _, axs = plt.subplots(3, 1)
 
     axs[0].plot(time, data)
     axs[0].plot(time, large_data, lw=3)
@@ -304,10 +265,7 @@ def _(data, duration, is_large, large_data, plt, threshold, time):
 
     axs[1].margins(x=0)
     axs[1].set(
-        xlabel="Time [s]",
-        ylabel="Large data",
-        xlim=(0, duration),
-        ylim=(-1.05, 1.05),
+        xlabel="Time [s]", ylabel="Large data", xlim=(0, duration), ylim=(-1.05, 1.05)
     )
 
     axs[2].set(xlabel="Points only", ylabel="Large data only")
@@ -323,7 +281,9 @@ def _(data, duration, is_large, large_data, plt, threshold, time):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Example 2: Find Start and End of a Movement""")
+    mo.md(r"""
+    ### Example 2: Find Start and End of a Movement
+    """)
     return
 
 
@@ -380,7 +340,9 @@ def _(io, np, plt, signal, threshold):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Example 3: Find Bright Pixels in Grayscale Image""")
+    mo.md(r"""
+    ### Example 3: Find Bright Pixels in Grayscale Image
+    """)
     return
 
 
@@ -395,7 +357,7 @@ def _(plt):
 
 @app.cell
 def _(np, plt):
-    def corr_vis(x: np.ndarray, y: np.ndarray) -> None:
+    def corr_vis(x, y):
         """Visualize correlation, by calculating the cross-correlation of two
         signals, one point at a time. The aligned signals and the resulting corss
         correlation value are shown, and advanced when the user hits a key or
@@ -425,8 +387,7 @@ def _(np, plt):
         xmax = Ny + Nx - 1
 
         # Generate figure and axes
-        if "fig" not in locals():
-            _, axs = plt.subplots(3, 1)
+        _, axs = plt.subplots(3, 1)
 
         # First plot: Signal 1
         axs[0].plot(range(Ny), y, "-", label="signal")
@@ -490,7 +451,9 @@ def _(np, plt):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Cross-Correlation""")
+    mo.md(r"""
+    ## Cross-Correlation
+    """)
     return
 
 
@@ -512,7 +475,9 @@ def _(corr_vis, np, plt):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""### Auto-correlation""")
+    mo.md(r"""
+    ### Auto-correlation
+    """)
     return
 
 
@@ -543,7 +508,9 @@ def _(np, plt):
 
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md(r"""## Interpolation""")
+    mo.md(r"""
+    ## Interpolation
+    """)
     return
 
 
