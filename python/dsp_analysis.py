@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.17.7"
+__generated_with = "0.18.4"
 app = marimo.App(width="full")
 
 
@@ -87,9 +87,7 @@ def _(np, plt):
         # From a quick look we learn - nothing
         axs[0].plot(t, sig, lw=0.7, label="noisy")
         axs[0].plot(t, sig_ideal, ls="dashed", lw=2, label="ideal")
-        axs[0].set(
-            xlim=(0, 0.4), ylim=(-15, 25), xlabel="Time (s)", ylabel="Signal ()"
-        )
+        axs[0].set(xlim=(0, 0.4), ylim=(-15, 25), xlabel="Time (s)", ylabel="Signal ()")
         axs[0].legend()
 
         # Calculate the spectrum by hand
@@ -99,10 +97,7 @@ def _(np, plt):
 
         axs[1].plot(freq, fft_abs)
         axs[1].set(
-            xlabel="Frequency (Hz)",
-            ylabel="|FFT| ()",
-            xlim=(0, 35),
-            yticklabels=[],
+            xlabel="Frequency (Hz)", ylabel="|FFT| ()", xlim=(0, 35), yticklabels=[]
         )
     return (power_spectrum,)
 
