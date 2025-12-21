@@ -95,7 +95,10 @@ ax1.plot(x_filt[1:], label="average")
 ax1.plot(x_med, label="median")
 ```
 
-#figure(image("images/filter-morph.png", width: 40%), caption: "形态滤波器")
+#figure(
+  image("images/filter-morph.png", width: 40%),
+  caption: "形态滤波器",
+)
 
 = 移动平均平滑
 
@@ -124,7 +127,10 @@ ax_ma.plot(days, avg24hTempC, label="24 Hour Average (delayed)")
 ax_ma.plot(days - fDelay / 24, avg24hTempC, label="24 Hour Average")
 ```
 
-#figure(image("images/filter-ma.png", width: 50%), caption: "移动平均滤波器")
+#figure(
+  image("images/filter-ma.png", width: 50%),
+  caption: "移动平均滤波器",
+)
 
 可以通过最值来表征数据的变化。
 
@@ -146,7 +152,10 @@ ax_p.plot(days, envMean, label="Mean")
 ax_p.plot(days, envLow(days), label="Low")
 ```
 
-#figure(image("images/filter-peaks.png", width: 50%), caption: "包络图")
+#figure(
+  image("images/filter-peaks.png", width: 50%),
+  caption: "包络图",
+)
 
 == 二项式滤波器
 
@@ -171,7 +180,10 @@ ax_b.plot(
 ax_b.legend()
 ```
 
-#figure(image("images/filter-binom.png", width: 50%), caption: "二项式滤波器")
+#figure(
+  image("images/filter-binom.png", width: 50%),
+  caption: "二项式滤波器",
+)
 
 == 指数滤波器
 
@@ -193,7 +205,10 @@ ax_ex.plot(days - fDelay / 24, binomMA, label="Binomial Weighted Average")
 ax_ex.plot(days - 1 / 24, exponMA, label="Expon Weighted Average")
 ```
 
-#figure(image("images/filter-expon.png", width: 50%), caption: "指数滤波器")
+#figure(
+  image("images/filter-expon.png", width: 50%),
+  caption: "指数滤波器",
+)
 
 = 定期采样数据
 
@@ -284,8 +299,8 @@ $
 $ <vel>
 
 $
-  𝒙(t) &= 𝒙(t_0) + ∫_(t_0)^t "vel"(t^(′′)) dd(t^(′′)) = \
-  &= 𝒙(t_0) + "vel"(t_0) * (t - t_0) + ∫_(t_0)^t ∫_(t_0)^(t^(′′)) "acc"(t^′) dd(t^′, t^(′′))
+  𝒙(t) & = 𝒙(t_0) + ∫_(t_0)^t "vel"(t^(′′)) dd(t^(′′)) = \
+       & = 𝒙(t_0) + "vel"(t_0) * (t - t_0) + ∫_(t_0)^t ∫_(t_0)^(t^(′′)) "acc"(t^′) dd(t^′, t^(′′))
 $ <acc>
 
 若传感器在$t_0$处的速度为$v_0$，则位置变化由下式给出

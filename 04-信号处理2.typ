@@ -126,7 +126,10 @@ buttLoop = signal.filtfilt(nom, denom, x_volt.flatten())
 
 然而，虽然电压明显经过平滑处理，但它仍然包含小的 60 Hz 波纹。若对信号进行重采样，以便通过移动平均滤波器捕获 60 Hz 信号的完整周期，就可以显著减弱该波纹。若以$17*60=1020$Hz对信号进行重采样，可以使用17点移动平均滤波器来去除 60 Hz 的电线噪声。
 
-#figure(image("images/find-resample.png", width: 40%), caption: "重采样")
+#figure(
+  image("images/find-resample.png", width: 40%),
+  caption: "重采样",
+)
 
 == 去峰值
 
@@ -202,7 +205,10 @@ def hampel(x, k, n_sigma=3):
 - 它们在样本位置是连续的
 - 每个多项式末尾的导数在一定阶数下是连续的
 
-#figure(image("images/find-interpol.png", width: 40%), caption: "插值")
+#figure(
+  image("images/find-interpol.png", width: 40%),
+  caption: "插值",
+)
 
 #tip[
   插值样条与 B 样条明显不同：前者总是经过给定的数据点，而后者则被数据吸引。
@@ -266,7 +272,10 @@ $ <cross_corr>
 
 在自相关（即信号与其自身的互相关）中，始终会在零滞后处出现峰值，其大小就是信号能量。
 
-#figure(image("images/find-autocorr.png", width: 40%), caption: "自相关")
+#figure(
+  image("images/find-autocorr.png", width: 40%),
+  caption: "自相关",
+)
 
 === 归一化
 
@@ -295,7 +304,10 @@ $
   (f ∗ g)(t) = ∫_(-∞)^(∞) f(τ) g(t - τ) dd(τ)
 $
 
-#figure(image("images/filter-conv.png", width: 40%), caption: "卷积运算")
+#figure(
+  image("images/filter-conv.png", width: 40%),
+  caption: "卷积运算",
+)
 
 互相关是两个函数之间的滑动点积或滑动内积。互相关中的滤波器不经过反转，而是直接滑过函数$f$。$f$与$g$之间的交叉区域即是互相关。本质上是执行逐元素乘法和加法。
 
