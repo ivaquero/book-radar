@@ -30,7 +30,7 @@
 == 基本式
 
 $
-  P_r & = frac(P_t G^2 λ^2 σ F, (4π)^3 R^4 L)                 \
+  P_r & = frac(P_t G^2 λ^2 σ F, (4π)^3 R^4 L) \
       & = underbrace((P_t G_t) / (4π R^2), ctext("发射能量密度"))
         ⋅ underbrace(σ / L, ctext("有效反射面积"))
         ⋅ underbrace(F / (4π R^2), ctext("距离衰减"))
@@ -93,7 +93,7 @@ $
 
 线性调制是将传输频率增加到另一个值，创建锯齿状调制模式。当接收信号有延迟时，每时每刻会得到不同的频率。由产生的差频，可以计算出量测的位
 
-#theorem(title: "Carson 法则")[
+#theorem(title: ctext("Carson 法则"))[
   几乎所有（≈98%）的调频信号的功率处于带宽。
 ]
 
