@@ -30,17 +30,17 @@
 == 基本式
 
 $
-  P_r & = frac(P_t G^2 λ^2 σ F, (4π)^3 R^4 L) \
-      & = underbrace((P_t G_t) / (4π R^2), ctext("发射能量密度"))
+  P_r & = frac(P_t G^2 λ^2 σ F, (4pi)^3 R^4 L) \
+      & = underbrace((P_t G_t) / (4pi R^2), ctext("发射能量密度"))
         ⋅ underbrace(σ / L, ctext("有效反射面积"))
-        ⋅ underbrace(F / (4π R^2), ctext("距离衰减"))
-        ⋅ underbrace((G_r λ^2) / (4π), ctext("有效接收面积"))
+        ⋅ underbrace(F / (4pi R^2), ctext("距离衰减"))
+        ⋅ underbrace((G_r λ^2) / (4pi), ctext("有效接收面积"))
 $
 
 其中，$P_t$和$P_r$分别为（雷达）峰值发射功率和峰值接收功率，$G_t$和$G_r$分别为（天线）发射增益和接收增益，$R$为（目标）探测距离，$σ$为雷达反射截面积（radar cross section，RCS），$L$为（系统）能量损失，$F$为传播因子，$λ$为信号波长。其中
 
 $
-  G_r = ctext("定向功率密度") / ctext("同向功率密度") = frac(A_("sphere"), A_("ant")) = frac(4π R^2, A_("ant")) ≈ frac(4π R^2, θ_("azi") θ_("ele")) = frac(4π R^2, (R λ) / b (R λ) / h) = frac(4π A, λ^2)
+  G_r = ctext("定向功率密度") / ctext("同向功率密度") = frac(A_("sphere"), A_("ant")) = frac(4pi R^2, A_("ant")) ≈ frac(4pi R^2, θ_("azi") θ_("ele")) = frac(4pi R^2, (R λ) / b (R λ) / h) = frac(4pi A, λ^2)
 $
 
 #let data = csv("data/radar-target.csv")
@@ -55,7 +55,7 @@ $ N = k_B T_s B_N $
 其中，$k_B$为 Boltzmann 常数，$T_s$为系统噪声温度，$B_N$为信号的噪声带宽。可得信噪比为
 
 $
-  "SNR" = frac("Signal Power", "Noise Power") = frac(P_t G λ^2 σ F, (4π)^3 R^4 L k_B T_s B_N)
+  "SNR" = frac("Signal Power", "Noise Power") = frac(P_t G λ^2 σ F, (4pi)^3 R^4 L k_B T_s B_N)
 $
 
 不难看出，与探测距离

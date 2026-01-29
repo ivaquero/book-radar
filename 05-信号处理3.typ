@@ -27,28 +27,28 @@ Fourier 变换的基本思想是：对有限离散信号，每个数字记录的
 为了将连续函数从时域变换到频域，可以使用 Fourier 积分。常见的约定是用小写变量表示时间函数，用大写变量表示频率函数
 
 $
-  X(f) = ∫_(-∞)^∞ x(t) e^(-j 2π f t) dd(t)
+  X(f) = ∫_(-∞)^∞ x(t) e^(-j 2pi f t) dd(t)
 $
 
 其中，$f$代表频率。逆变换由下式给出
 
 $
-  x(t) = ∫_(-∞)^∞ X(k) e^(j 2π f t) dd(f)
+  x(t) = ∫_(-∞)^∞ X(k) e^(j 2pi f t) dd(f)
 $
 
 Fourier 变换$X(f)$是一个复数，有一个简单直观的解释：其幅度是相应频率$f$的幅度（amplitude），其相位是相应频率的相移（shift）。
 
 #tip[
-  有些作者选择用角频率$ω = 2π f$来定义 Fourier 变换（及其逆变换）。在这种情况下，需要一个总计为$1 / 2π$的缩放因子。$1 / 2π$可以缩放正向变换或逆变换，或者$1 / sqrt(2π)$可以缩放两者（对称 Fourier 变换）。
+  有些作者选择用角频率$ω = 2pi f$来定义 Fourier 变换（及其逆变换）。在这种情况下，需要一个总计为$1 / 2pi$的缩放因子。$1 / 2pi$可以缩放正向变换或逆变换，或者$1 / sqrt(2pi)$可以缩放两者（对称 Fourier 变换）。
 ]
 
 === 复数表示法
 
 振荡可以用三种不同但等效的方式来表达：
 
-- $"osc"(t) = (r * e^(j ϕ)) * e^(j 2π f t)$
-- $"osc"(t) = r * sin(2π f t + ϕ)$
-- $"osc"(t) = a * cos(2π f t) + b * sin(2π f t)$\
+- $"osc"(t) = (r * e^(j ϕ)) * e^(j 2pi f t)$
+- $"osc"(t) = r * sin(2pi f t + ϕ)$
+- $"osc"(t) = a * cos(2pi f t) + b * sin(2pi f t)$\
 
 由 Euler 公式
 
@@ -59,28 +59,28 @@ $
 可得
 
 $
-  e^(j 2π f t) = cos(2π f t) + j sin(2π f t)
+  e^(j 2pi f t) = cos(2pi f t) + j sin(2pi f t)
 $\
 
-由此可知，正弦波和余弦波可以用$e^(j 2π f t)$和$e^(-j 2π f t)$来表示
+由此可知，正弦波和余弦波可以用$e^(j 2pi f t)$和$e^(-j 2pi f t)$来表示
 
 $
-  cos(2π f t) & = frac(1, 2)(e^(j 2π f t) + e^(-j 2π f t))   \
-  sin(2π f t) & = frac(1, 2 j)(e^(j 2π f t) - e^(-j 2π f t))
+  cos(2pi f t) & = frac(1, 2)(e^(j 2pi f t) + e^(-j 2pi f t)) \
+  sin(2pi f t) & = frac(1, 2 j)(e^(j 2pi f t) - e^(-j 2pi f t))
 $
 
 又由
 
 $
-  (r * e^(j ϕ)) * e^(j 2π f t) = r * e^(j(2π f t + ϕ))
+  (r * e^(j ϕ)) * e^(j 2pi f t) = r * e^(j(2pi f t + ϕ))
 $
 
-$e^(j 2π f t)$与复数的乘积对应于振荡的缩放和相移。这里需要的三角函数的最后一个数学性质是：
+$e^(j 2pi f t)$与复数的乘积对应于振荡的缩放和相移。这里需要的三角函数的最后一个数学性质是：
 
 频率为$k$的正弦波和余弦波的任何组合都是具有该频率的正弦波。振荡的幅度和相位取决于正弦和余弦贡献的相对分量。具体来说，即
 
 $
-  a * cos(2π f t) + b * sin(2π f t) = c * sin(2π f t + ϕ)
+  a * cos(2pi f t) + b * sin(2pi f t) = c * sin(2pi f t + ϕ)
 $
 
 其中，$c = sqrt(a^2 + b^2)$ ，且$ϕ = tan^(−1)(b\/a)$。
@@ -98,7 +98,7 @@ $
 对常数函数$x(t) = 1$，其 Fourier 变换为
 
 $
-  X(f) = ∫_(-∞)^∞ e^(-j 2π f t) dd(t)
+  X(f) = ∫_(-∞)^∞ e^(-j 2pi f t) dd(t)
 $
 
 这个积分是以$0$为中心的 Dirac δ 函数：
@@ -116,7 +116,7 @@ $
 实际测量信号永远不会是无限的。它们总是有开始和结束。使用 Fourier 级数，可将这样的信号变成“周期性的”无限信号。Fourier 级数表明，每个周期函数都可以分解为频率为基频倍数的正弦波的总和：
 
 $
-  x(t) = a_0 + sum_(n = 1)^∞ [a_n * cos(2π n f_p t) + b_n * sin(2π n f_p t)]
+  x(t) = a_0 + sum_(n = 1)^∞ [a_n * cos(2pi n f_p t) + b_n * sin(2pi n f_p t)]
 $
 
 基频$f_p$由下式确定：
@@ -128,13 +128,13 @@ $
 其中，$T_P$是数据集的持续时间，即一个“周期”的持续时间。同样，Fourier 级数可以用更简洁的复数符号表示
 
 $
-  x(t) = sum_(n = -∞)^∞ X_n * e^(j 2π n f_p t) = sum_(n = -∞)^∞ X_n * e^(j 2π n frac(t, T_P))
+  x(t) = sum_(n = -∞)^∞ X_n * e^(j 2pi n f_p t) = sum_(n = -∞)^∞ X_n * e^(j 2pi n frac(t, T_P))
 $
 
 其中，$X_n$的值由下式给出
 
 $
-  X_n = frac(1, T_P) ∫_τ^(τ + T_P) x(t) * e^(-j 2π n frac(t, T_P)) d t
+  X_n = frac(1, T_P) ∫_τ^(τ + T_P) x(t) * e^(-j 2pi n frac(t, T_P)) d t
 $
 
 == 改进变换
@@ -146,13 +146,13 @@ $
 若以恒定采样频率对$N$个数据点进行采样，则可以通过以下方式获得 Fourier 系数$F_n$：
 
 $
-  X_n = sum_(τ = 0)^(N - 1) x_τ * e^(-j 2π frac(n⋅τ, N)) quad "with" n = 0, ⋯, N - 1
+  X_n = sum_(τ = 0)^(N - 1) x_τ * e^(-j 2pi frac(n⋅τ, N)) quad "with" n = 0, ⋯, N - 1
 $ <four>
 
 逆 Fourier 变换由下式给出
 
 $
-  x_τ = frac(1, N) sum_(n = 0)^(N - 1) X_n * e^(j 2π frac(n⋅τ, N)) quad "with" τ = 0, ⋯, N - 1
+  x_τ = frac(1, N) sum_(n = 0)^(N - 1) X_n * e^(j 2pi frac(n⋅τ, N)) quad "with" τ = 0, ⋯, N - 1
 $ <four_inv>
 
 由于这些方程包含有限数量的离散数据点@four 和有限数量的离散波@four_inv，因此这种变换被称为离散 Fourier 变换（Discrete Fourier Transform，DFT）。
@@ -160,7 +160,7 @@ $ <four_inv>
 由@four_inv，且 DFT 中的指数在频率上是周期性的，则有
 
 $
-  e^(2π j frac(-n ⋅ τ, N)) = e^(2π j frac(-n ⋅ τ, N)) * 1 = e^(2π j frac(-n ⋅ τ, N)) * e^(2π j frac(N ⋅ τ, N)) = e^(2π j frac((-n + N) ⋅ τ, N))
+  e^(2pi j frac(-n ⋅ τ, N)) = e^(2pi j frac(-n ⋅ τ, N)) * 1 = e^(2pi j frac(-n ⋅ τ, N)) * e^(2pi j frac(N ⋅ τ, N)) = e^(2pi j frac((-n + N) ⋅ τ, N))
 $
 
 === 快速 Fourier 变换
@@ -303,7 +303,7 @@ $ x_w (n) = x(n) * w(n) $
 
 - 频域卷积
 
-$ X_N (e^(j ω)) = 1 / 2 ∫_(-π)^π X (e^(j θ)) W(e^(j (ω - θ))) dd(θ) $\
+$ X_N (e^(j ω)) = 1 / 2 ∫_(-pi)^pi X (e^(j θ)) W(e^(j (ω - θ))) dd(θ) $\
 
 @window 说明了这一原理。左上子图显示了我们迄今为止一直在使用的声音信号。左下子图显示了选择该声音信号一小段的窗口。右侧子图显示了如何执行加窗：将基础信号与窗口相乘，以获得该窗口中心周围短时间段内的信号。计算该时间段内的频谱密度可提供窗口时间内的功率谱。
 
