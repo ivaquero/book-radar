@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.4"
+__generated_with = "0.19.11"
 app = marimo.App(width="full")
 
 
@@ -11,6 +11,7 @@ def _():
     from matplotlib import patches
     from scipy import integrate, interpolate, io, ndimage, signal, stats
     from statsmodels.nonparametric.smoothers_lowess import lowess
+
     return (
         integrate,
         interpolate,
@@ -610,6 +611,7 @@ def _(interpolate, np):
         spl = interpolate.BSpline(kv, cv, degree)
 
         return spl(np.linspace(0, max_param, n))
+
     return (bspline,)
 
 
@@ -702,6 +704,7 @@ def _(np, stats):
         # Plot cumulative curve
         ycum /= np.sum(ycum) / 10
         ax.plot(xcum, ycum)
+
     return explain_KDE, plot_histogram
 
 
@@ -818,6 +821,7 @@ def _(ndimage, np, plt):
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 

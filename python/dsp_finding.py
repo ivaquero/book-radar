@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.4"
+__generated_with = "0.19.11"
 app = marimo.App(width="full")
 
 
@@ -9,6 +9,7 @@ def _():
     import matplotlib.pyplot as plt
     import numpy as np
     from scipy import interpolate, io, signal
+
     return interpolate, io, np, plt, signal
 
 
@@ -444,6 +445,7 @@ def _(np, plt):
 
             # Update the plot
             plt.draw()
+
     return (corr_vis,)
 
 
@@ -571,6 +573,7 @@ def _(interpolate, np, plt):
 @app.cell
 def _():
     import marimo as mo
+
     return (mo,)
 
 

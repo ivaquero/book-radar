@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.18.4"
+__generated_with = "0.19.11"
 app = marimo.App(width="full")
 
 
@@ -10,6 +10,7 @@ def _():
     import numpy as np
     from numpy import fft
     from scipy import io, signal
+
     return fft, io, np, plt, signal
 
 
@@ -67,6 +68,7 @@ def _(np):
         sig_with_noise = sig_without_noise + noise_amp * np.random.randn(len(sig))
 
         return (t, dt, sig_with_noise, sig_without_noise)
+
     return (generate_data,)
 
 
@@ -99,6 +101,7 @@ def _(np, plt):
         axs[1].set(
             xlabel="Frequency (Hz)", ylabel="|FFT| ()", xlim=(0, 35), yticklabels=[]
         )
+
     return (power_spectrum,)
 
 
@@ -130,6 +133,7 @@ def _(np, plt):
         axs[0].set(ylabel="Power (linear)")
         axs[1].semilogy(freq, Pxx)
         axs[1].set(xlabel="Frequency (Hz)", ylabel="Power (dB)")
+
     return (power_spectrum2,)
 
 
@@ -155,6 +159,7 @@ def _(plt, signal):
         axs[0].legend()
         axs[1].set(xlabel="Frequency (Hz)", ylabel="Spectral Density (dB)")
         axs[1].legend()
+
     return (power_spectrum3,)
 
 
@@ -191,6 +196,7 @@ def _(io, np):
         Pxx = Pxx * 2 / (np.sum(Pxx) / duration)
 
         return time, a1, sound_rate, freq, Pxx, duration
+
     return (get_data,)
 
 
@@ -226,6 +232,7 @@ def _(np, plt):
         # Position the plots
         axs[0].set(position=[0.125, 0.11, 0.2, 0.775])
         axs[1].set(position=[0.35, 0.11, 0.2, 0.775])
+
     return (fourier_intro,)
 
 
@@ -270,6 +277,7 @@ def _(plt):
         axs[1].set(
             xlim=[0, upper_limit], xlabel="Frequency (Hz)", ylabel="Power spectrum (dB)"
         )
+
     return (linear_and_log,)
 
 
@@ -307,6 +315,7 @@ def _(freq, np, plt):
             xlabel="Frequency (Hz)",
             ylabel="Power spectrum (P**2/Hz)",
         )
+
     return (noise_effects,)
 
 
@@ -349,6 +358,7 @@ def _(np, plt, signal):
         axs[1].semilogy(f, welch, label="Welch")
         axs[1].set(xlim=[800, 1100], xlabel="Frequency (Hz)")
         axs[1].legend()
+
     return (welch_periodogram,)
 
 
@@ -386,7 +396,7 @@ def _(io, np, plt, signal, time):
 
     # Get the data
     rate_w, sound = io.wavfile.read("../data/a1.wav")
-    a1 = np.float32(sound[slice])
+    a1 = sound[slice]
     time_w = np.arange(len(a1)) / rate_w
 
     a1 /= np.max(a1)
@@ -453,6 +463,7 @@ def _(fft, np):
 
         nyq = int(len(Pxx) / 2)
         return (Pxx[:nyq], freq[:nyq])
+
     return (powerSpect,)
 
 
@@ -477,6 +488,7 @@ def _(np, powerSpect):
 
         axs[1].plot(freq, Pxx, ".-", lw=0.5)
         axs[1].set(xlim=(1, 5000))
+
     return (showData,)
 
 
@@ -523,12 +535,6 @@ def _(np, plt, showData, signal):
     # plt.savefig("../images/spectral-hann.png")
     plt.show()
     return
-
-
-@app.cell
-def _():
-    import marimo as mo
-    return (mo,)
 
 
 if __name__ == "__main__":
