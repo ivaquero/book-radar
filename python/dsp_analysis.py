@@ -128,7 +128,7 @@ def _(np, plt):
         # The power is the norm of the amplitude squared
         Pxx = fft_abs**2
         # Showing the same data on a linear and a log scale
-        _, axs = plt.subplots(2, 1, sharex=True)
+        _, axs = plt.subplots(2, 1, sharex=1)
         axs[0].plot(freq, Pxx)
         axs[0].set(ylabel="Power (linear)")
         axs[1].semilogy(freq, Pxx)
@@ -151,7 +151,7 @@ def _(plt, signal):
         f_pgram, P_pgram = signal.periodogram(sig, fs=1 / dt)
         f_welch, P_welch = signal.welch(sig, fs=100, nperseg=2**8)
 
-        _, axs = plt.subplots(2, 1, sharex=True)
+        _, axs = plt.subplots(2, 1, sharex=1)
 
         axs[0].semilogy(f_pgram, P_pgram, label="periodogram")
         axs[1].semilogy(f_welch, P_welch, label="welch")
@@ -217,7 +217,7 @@ def _(np, plt):
     def fourier_intro(time, data, freq, Pxx, time_slice):
         """Time- and frequency presentation of sound."""
 
-        _, axs = plt.subplots(1, 3, figsize=(8, 4), constrained_layout=True)
+        _, axs = plt.subplots(1, 3, figsize=(8, 4), constrained_layout=1)
         axs[0].plot(time, data, lw=0.5)
         axs[0].set(xlabel="Time (s)", ylabel="Sound-pressure")
         axs[0].margins(x=0)
@@ -265,7 +265,7 @@ def _(plt):
     def linear_and_log(freq, Pxx):
         """Comparison of linear and log representatino of powerspectrum."""
 
-        _, axs = plt.subplots(1, 2, figsize=(8, 4), constrained_layout=True)
+        _, axs = plt.subplots(1, 2, figsize=(8, 4), constrained_layout=1)
         upper_limit = 4000
         axs[0].plot(freq, Pxx)
         axs[0].set(
@@ -302,7 +302,7 @@ def _(freq, np, plt):
         # Normalize to 'density'
         Pxx_noisy = Pxx_noisy * 2 / (np.sum(Pxx_noisy) / duration)
 
-        _, axs = plt.subplots(1, 2, figsize=(8, 4), constrained_layout=True)
+        _, axs = plt.subplots(1, 2, figsize=(8, 4), constrained_layout=1)
         axs[0].plot(time, sound, label="original")
         axs[0].plot(time, sound_noisy, label="noise added")
         axs[0].set(xlabel="Time (s)", ylabel="Sound-pressure ()", xlim=time_slice)
@@ -340,7 +340,7 @@ def _(np, plt, signal):
     def welch_periodogram(data, rate, freq, Pxx):
         """Comparison of simple powerspectrum to Welch-periodogram"""
 
-        _, axs = plt.subplots(1, 2, figsize=(8, 4), constrained_layout=True)
+        _, axs = plt.subplots(1, 2, figsize=(8, 4), constrained_layout=1)
         f, welch = signal.welch(data, fs=rate, nperseg=len(data) / 8)
         df = np.diff(f)[0]
         # "normalize" welch
@@ -403,7 +403,7 @@ def _(io, np, plt, signal, time):
     max_sound = np.max(a1[win_index])
 
     # Make the plots
-    _, ax_w = plt.subplots(2, 2, constrained_layout=True)
+    _, ax_w = plt.subplots(2, 2, constrained_layout=1)
     # Sound
     ax_w[0, 0].plot(time_w, a1, lw=0.2)
     ax_w[0, 0].margins(x=0)
@@ -500,7 +500,7 @@ def _(np, plt, showData, signal):
     f_h = 1000
     tMax = 0.01
 
-    _, ax_h = plt.subplots(3, 2, figsize=(8, 4), constrained_layout=True)
+    _, ax_h = plt.subplots(3, 2, figsize=(8, 4), constrained_layout=1)
 
     # Data ...
     t_h = np.arange(0, tMax, dt_h)

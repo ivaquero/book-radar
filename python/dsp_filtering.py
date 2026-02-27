@@ -135,7 +135,7 @@ def _(aa, bb, np, plt, signal):
     ## Generate coefficients for an averaging filter (FIR)
     xs = [xImpulse, xStep]
     xlabels = ["Impulse", "Step"]
-    _, axs = plt.subplots(2, 1, sharex=True)
+    _, axs = plt.subplots(2, 1, sharex=1)
 
     for x_, xlabel, ax_ in zip(xs, xlabels, axs.flatten()):
         # Find the impulse-response
@@ -167,7 +167,7 @@ def _(aa, bb, np, plt, signal):
     dB = 20 * np.log10(np.abs(h))
     phase = np.rad2deg(np.arctan2(h.imag, h.real))
     # Plot them, in a new figure
-    _, axfs = plt.subplots(2, 1, figsize=(8, 4), sharex=True)
+    _, axfs = plt.subplots(2, 1, figsize=(8, 4), sharex=1)
 
     axfs[0].plot(w, dB)
     axfs[0].set(
@@ -459,7 +459,7 @@ def _(integrate, np, patches, plt):
     time = np.arange(len(vel))
 
     ## Plot the data
-    _, axs2 = plt.subplots(3, 1, sharex=True)
+    _, axs2 = plt.subplots(3, 1, sharex=1)
 
     axs2[0].plot(time, vel, "*-")
     for ii in range(len(vel) - 1):
@@ -714,7 +714,7 @@ def _(explain_KDE, np, plot_histogram, plt):
     x_k = np.array([-2.1, -1.3, -0.4, 1.9, 5.1, 6.2])
 
     # Define the two plots
-    _, ax_k = plt.subplots(1, 2, sharey=True)
+    _, ax_k = plt.subplots(1, 2, sharey=1)
 
     # Generate the left plot
     plot_histogram(ax_k[0], x_k)

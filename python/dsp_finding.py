@@ -29,7 +29,7 @@ def _(io, plt):
     # t_ecg = len(ecgl["ecgl"])
     # x_ecg = np.linspace(0, t_ecg, t_ecg)
 
-    fig_ecg, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 4), sharex=True)
+    fig_ecg, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 4), sharex=1)
 
     ax1.plot(ecgl["ecgl"])
     ax1.set(ylabel="Voltage (mV)")
@@ -56,7 +56,7 @@ def _(ecgl, ecgnl, plt, signal):
     dt_ecgnl = signal.detrend(
         ecgnl["ecgnl"], axis=-1, type="linear", bp=0, overwrite_data=False
     )
-    fig_ecgd, (ax_1, ax_2) = plt.subplots(2, 1, figsize=(8, 4), sharex=True)
+    fig_ecgd, (ax_1, ax_2) = plt.subplots(2, 1, figsize=(8, 4), sharex=1)
 
     ax_1.plot(dt_ecgl)
     ax_1.set(ylabel="Voltage (mV)")
@@ -294,7 +294,7 @@ def _(io, np, plt, signal, threshold):
     hor_pos = io.loadmat("../data/HorPos.mat")["HorPos"][:, 0]
 
     # General layout of the plot
-    _, ax_f = plt.subplots(3, 2, constrained_layout=True)
+    _, ax_f = plt.subplots(3, 2, constrained_layout=1)
 
     # Select an interesting domain
     my_domain = range(9000, 13500)
