@@ -27,7 +27,7 @@
 - macOS：`~/Library/Application Support`
 - Windows：`%APPDATA%`
 
-```bash
+```shell
 cd [above-path]
 git clone --depth 1 --branch main https://github.com/typst/packages typst
 ```
