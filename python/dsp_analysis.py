@@ -399,7 +399,7 @@ def _(io, np, plt, signal, time):
     a1 = sound[slice]
     time_w = np.arange(len(a1)) / rate_w
 
-    a1 /= np.max(a1)
+    a1 = np.int64(a1) / np.max(a1)
     max_sound = np.max(a1[win_index])
 
     # Make the plots
@@ -535,6 +535,13 @@ def _(np, plt, showData, signal):
     # plt.savefig("../images/spectral-hann.png")
     plt.show()
     return
+
+
+@app.cell
+def _():
+    import marimo as mo
+
+    return (mo,)
 
 
 if __name__ == "__main__":
