@@ -17,7 +17,6 @@
 #figure(
   tableq(data, 11),
   caption: "频率与波段",
-  kind: table,
 )
 
 == 波段应用
@@ -30,7 +29,6 @@
 #figure(
   tableq(data, 6),
   caption: "不同波段的应用",
-  kind: table,
 )
 
 = 雷达方程
@@ -55,7 +53,6 @@ $
 #figure(
   tableq(data, 5),
   caption: "目标特性",
-  kind: table,
 )
 
 == 噪声

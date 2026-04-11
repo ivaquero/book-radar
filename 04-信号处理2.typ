@@ -258,7 +258,6 @@ $ <cross_corr>
   ),
   caption: "互相关",
   supplement: [表],
-  kind: table,
 )
 
 总而言之，互相关提供了两条信息：
