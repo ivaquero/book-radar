@@ -426,6 +426,8 @@ window.onload = () => {
 	const btn_hide_nAnt = elem("hide_nAnt_btn");
 	const btn_reset_deltaT = elem("reset_deltaT_btn");
 	const btn_reset_all = elem("reset_all_btn");
+	const angleSlider = elem("angleSlider");
+	const currentThetaSpan = elem("currentTheta");
 
 	slider_dLambdaRatio.value = dLambdaRatio;
 	slider_nAnt.value = nAnt;

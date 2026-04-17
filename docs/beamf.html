@@ -57,6 +57,41 @@
                     <button id="reset_all_btn">重置全部</button>
                 </div>
             </div>
+            <div id="calcDiv" class="intro">
+                <h3>计算过程可视化</h3>
+                <div id="calcSteps">
+                    <div class="calc-step">
+                        <h4>步骤1: 计算相邻天线时间延迟 Δτ</h4>
+                        <div class="formula">Δτ = (d<sub>Ant</sub> × sin(θ)) / c<sub>0</sub></div>
+                        <div class="calc-result" id="calc_deltaTau"></div>
+                    </div>
+                    <div class="calc-step">
+                        <h4>步骤2: 计算相位差 Δψ</h4>
+                        <div class="formula">Δψ = 2π × (d<sub>Ant</sub> / λ<sub>0</sub>) × sin(θ)</div>
+                        <div class="calc-result" id="calc_deltaPsi"></div>
+                    </div>
+                    <div class="calc-step">
+                        <h4>步骤3: 计算控制相位 ΔΨ</h4>
+                        <div class="formula">ΔΨ = Δψ - ω<sub>0</sub>ΔT</div>
+                        <div class="calc-result" id="calc_deltaPhi"></div>
+                    </div>
+                    <div class="calc-step">
+                        <h4>步骤4: 主瓣方向 θ<sub>MainLobe</sub></h4>
+                        <div class="formula">θ<sub>MainLobe</sub> = arcsin((ω<sub>0</sub>ΔT × λ<sub>0</sub>) / (2π ×
+                            d<sub>Ant</sub>))</div>
+                        <div class="calc-result" id="calc_mainLobeAngle"></div>
+                    </div>
+                    <div class="calc-step">
+                        <h4>步骤5: 阵列因子计算</h4>
+                        <div class="formula">ArrayFactor = Σ e<sup>-j n ΔΨ</sup></div>
+                        <div class="calc-result" id="calc_arrayFactor"></div>
+                    </div>
+                </div>
+                <div id="currentAngle">
+                    <h4>当前角度 θ = <span id="currentTheta">0</span>°</h4>
+                    <input type="range" id="angleSlider" min="-90" max="90" value="0" step="1" />
+                </div>
+            </div>
             <div id="graphDiv" class="intro">
                 <h3>波束形成</h3>
                 <table>
