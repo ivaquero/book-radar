@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>雷达技术教程 - GitHub Pages</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        h1 {
+            color: #ffe970;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+
+        .nav-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffe970;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 233, 112, 0.3);
+        }
+
+        .nav-card h2 {
+            color: #ffe970;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .nav-card p {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            color: #cccccc;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #ffe970, #ffd700);
+            color: #1a1a1a;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 233, 112, 0.4);
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 233, 112, 0.6);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .feature {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #ffe970;
+        }
+
+        .feature h3 {
+            color: #ffe970;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📡 雷达技术教程</h1>
+
+        <div class="nav-card">
+            <h2>🎯 波束形成可视化</h2>
+            <p>交互式雷达波束形成演示，实时计算和可视化波束形成过程，包括相位控制、主瓣方向计算和阵列因子分析。</p>
+            <a href="beamf.html" class="btn">🚀 开始体验</a>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <h3>🔧 交互式控制</h3>
+                <p>通过滑动条实时调整天线间距、阵元数量和相位差，观察波束形成的动态变化</p>
+            </div>
+            <div class="feature">
+                <h3>📊 实时计算</h3>
+                <p>显示详细的计算过程，包括时间延迟、相位差、控制相位和主瓣方向</p>
+            </div>
+            <div class="feature">
+                <h3>📈 可视化图表</h3>
+                <p>极坐标图、相位图、阵列图和阵列因子曲线，全方位展示波束形成原理</p>
+            </div>
+            <div class="feature">
+                <h3>🎨 响应式设计</h3>
+                <p>适配不同屏幕尺寸，支持移动设备访问，现代化的深色主题界面</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 50px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+            <h3 style="color: #ffe970;">📚 相关资源</h3>
+            <p>本教程是《雷达技术》系列的一部分，涵盖了雷达系统的基础理论和实际应用。</p>
+            <p style="font-size: 0.9em; color: #999;">
+                <strong>技术栈：</strong> HTML5, CSS3, JavaScript, SVG, KaTeX<br>
+                <strong>兼容性：</strong> 现代浏览器（Chrome, Firefox, Safari, Edge）
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>
