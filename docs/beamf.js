@@ -4,7 +4,7 @@ function elem(id) {
 
 function showValue(objName, value, maxValue) {
 	const obj = elem(objName);
-	obj.innerHTML = `${value} / ${maxValue}`;
+	obj.innerHTML = `${value}`;
 }
 
 function arrayFactor(dLambdaRatio, nAnt, deltaT) {
@@ -625,13 +625,26 @@ window.onload = () => {
 		// 步骤4: 计算主瓣方向
 		let mainLobeAngleDeg = 0;
 		let mainLobeStatus = "";
+
+		// 调试：显示计算前的参数
+		console.log(`主瓣方向调试: deltaT=${deltaT}°, d/λ=${dLambdaRatio}, 2π×d/λ=${(2 * Math.PI * dLambdaRatio).toFixed(3)}`);
+
 		const sinTheta = (deltaT * Math.PI) / 180 / (2 * Math.PI * dLambdaRatio);
+
+		// 调试：显示sinθ计算过程
+		console.log(`主瓣方向调试: sinθ = (${deltaT} × π/180) / (2π × ${dLambdaRatio}) = ${sinTheta.toFixed(6)}`);
 
 		if (Math.abs(sinTheta) <= 1) {
 			mainLobeAngleDeg = Math.asin(sinTheta) * (180 / Math.PI);
-			mainLobeStatus = `θ<sub>MainLobe</sub> = arcsin(ω<sub>0</sub>ΔT × λ<sub>0</sub> / (2π × d<sub>Ant</sub>)) = arcsin((${deltaT}°) / (2π × ${dLambdaRatio.toFixed(3)})) = <strong style="color: #ff6670; font-size: 1.2em;">${mainLobeAngleDeg.toFixed(1)}°</strong>`;
+			let explanation = "";
+			if (deltaT === 0) {
+				explanation = " (ΔT=0°，无相位差，主瓣指向正前方)";
+			}
+			mainLobeStatus = `θ<sub>MainLobe</sub> = arcsin((${deltaT}°) / (2π × ${dLambdaRatio.toFixed(3)})) = <strong style="color: #ff6670; font-size: 1.2em;">${mainLobeAngleDeg.toFixed(1)}°</strong>${explanation}`;
+			console.log(`主瓣方向调试: 计算成功，主瓣方向=${mainLobeAngleDeg.toFixed(2)}°`);
 		} else {
 			mainLobeStatus = `θ<sub>MainLobe</sub> = <span style="color: #ff6670;">无解 (|sinθ| = ${Math.abs(sinTheta).toFixed(3)} > 1)</span>`;
+			console.log(`主瓣方向调试: 计算失败，|sinθ| = ${Math.abs(sinTheta).toFixed(3)} > 1`);
 		}
 		elem("calc_mainLobeAngle").innerHTML = mainLobeStatus;
 
@@ -712,11 +725,16 @@ window.onload = () => {
 			// 调试：显示计算结果
 			console.log(`波束宽度计算: 主瓣方向=${(thetaMain * 180 / Math.PI).toFixed(2)}°, 半功率宽度=${beamWidth.toFixed(2)}°, 零点1=${(firstNull1 * 180 / Math.PI).toFixed(2)}°, 零点2=${(firstNull2 * 180 / Math.PI).toFixed(2)}°`);
 
+			let mainLobeExplanation = "";
+			if (deltaT === 0) {
+				mainLobeExplanation = " (ΔT=0°，指向正前方)";
+			}
+
 			beamWidthInfo = `
 				<div class="calc-step">
 					<h4>波束宽度信息</h4>
 					<div class="formula">半功率波束宽度 ≈ ${beamWidth.toFixed(1)}°</div>
-					<div class="calc-result">主瓣方向: <strong style="color: #ff6670; font-size: 1.2em;">${(thetaMain * 180 / Math.PI).toFixed(1)}°</strong></div>
+					<div class="calc-result">主瓣方向: <strong style="color: #ff6670; font-size: 1.2em;">${(thetaMain * 180 / Math.PI).toFixed(1)}°</strong>${mainLobeExplanation}</div>
 					<div class="calc-result">第一零点: ${(firstNull1 * 180 / Math.PI).toFixed(1)}°, ${(firstNull2 * 180 / Math.PI).toFixed(1)}°</div>
 					<div class="calc-result">零点间距: ${((firstNull2 - firstNull1) * 180 / Math.PI).toFixed(1)}°</div>
 				</div>
@@ -1073,6 +1091,8 @@ window.onload = () => {
 	autoScalling();
 
 	// 初始化计算步骤显示
+	console.log("初始化: 开始显示计算步骤，角度=0°");
 	updateCalculationSteps(0);
 	updateBeamIndicator(0);
+	console.log("初始化: 计算步骤显示完成");
 };
