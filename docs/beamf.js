@@ -507,6 +507,7 @@ window.onload = () => {
 			slider.hasTimeOut = true;
 		};
 		slider.oninput = () => {
+			console.log(`参数滑块变化: ${sliderId} = ${slider.value}`);
 			showToolTip(tipId, sliderId, unit);
 			updatePlot();
 			if (slider.hasTimeOut) {
@@ -596,10 +597,12 @@ window.onload = () => {
 
 	// 计算过程可视化函数
 	function updateCalculationSteps(angleDeg) {
+		console.log(`updateCalculationSteps: 开始, 角度=${angleDeg}°`);
 		const dLambdaRatio = parseFloat(slider_dLambdaRatio.value);
 		const nAnt = parseInt(slider_nAnt.value);
 		const deltaT = parseFloat(slider_deltaT.value);
 		const angleRad = (angleDeg * Math.PI) / 180;
+		console.log(`updateCalculationSteps: 参数 - d/λ=${dLambdaRatio}, N=${nAnt}, ΔT=${deltaT}°`);
 
 		// 物理常数
 		const c0 = 299792458; // 光速 m/s
@@ -626,9 +629,9 @@ window.onload = () => {
 
 		if (Math.abs(sinTheta) <= 1) {
 			mainLobeAngleDeg = Math.asin(sinTheta) * (180 / Math.PI);
-			mainLobeStatus = `θ<sub>MainLobe</sub> = arcsin((${deltaT}° × ${lambda0}) / (2π × ${dLambdaRatio.toFixed(3)} × ${lambda0})) = ${mainLobeAngleDeg.toFixed(1)}°`;
+			mainLobeStatus = `θ<sub>MainLobe</sub> = arcsin(ω<sub>0</sub>ΔT × λ<sub>0</sub> / (2π × d<sub>Ant</sub>)) = arcsin((${deltaT}°) / (2π × ${dLambdaRatio.toFixed(3)})) = <strong style="color: #ff6670; font-size: 1.2em;">${mainLobeAngleDeg.toFixed(1)}°</strong>`;
 		} else {
-			mainLobeStatus = `θ<sub>MainLobe</sub> = 无解 (|sinθ| = ${Math.abs(sinTheta).toFixed(3)} > 1)`;
+			mainLobeStatus = `θ<sub>MainLobe</sub> = <span style="color: #ff6670;">无解 (|sinθ| = ${Math.abs(sinTheta).toFixed(3)} > 1)</span>`;
 		}
 		elem("calc_mainLobeAngle").innerHTML = mainLobeStatus;
 
@@ -641,13 +644,36 @@ window.onload = () => {
 			afImag += Math.sin(tau);
 		}
 		const afMagnitude = Math.sqrt(afReal * afReal + afImag * afImag);
-		const afPowerDb = 10 * Math.log10((afReal * afReal + afImag * afImag) / 4);
-		elem("calc_arrayFactor").innerHTML = `ArrayFactor = ${afMagnitude.toFixed(3)} ∠ ${(Math.atan2(afImag, afReal) * 180 / Math.PI).toFixed(1)}° = ${afPowerDb.toFixed(2)} dB`;
+		const afPower = (afReal * afReal + afImag * afImag) / 4; // 相对于单天线功率
+		const afPowerDb = 10 * Math.log10(afPower);
+
+		// 增强的阵列因子显示，包含详细的dB计算过程
+		elem("calc_arrayFactor").innerHTML = `
+			<div style="border: 1px solid #444; padding: 8px; border-radius: 4px; background: rgba(255,255,255,0.05);">
+				<div style="margin-bottom: 8px;"><strong>阵列因子计算结果：</strong></div>
+				<div style="margin-bottom: 5px;">
+					<span style="color: #56d4ff;">复数形式：</span>
+					ArrayFactor = ${afMagnitude.toFixed(3)} ∠ ${(Math.atan2(afImag, afReal) * 180 / Math.PI).toFixed(1)}°
+				</div>
+				<div style="margin-bottom: 5px;">
+					<span style="color: #56d4ff;">功率计算：</span>
+					|ArrayFactor|² = (${afReal.toFixed(3)})² + (${afImag.toFixed(3)})² = ${(afReal * afReal + afImag * afImag).toFixed(3)}
+				</div>
+				<div style="margin-bottom: 5px;">
+					<span style="color: #ff6670;">dB转换：</span>
+					ArrayFactor<sub>dB</sub> = 10 lg(${afPower.toFixed(3)}) = <strong style="color: #ff6670; font-size: 1.1em;">${afPowerDb.toFixed(2)} dB</strong>
+				</div>
+				<div style="font-size: 9px; color: #888; margin-top: 5px;">
+					注：功率相对于单天线归一化 (÷4)
+				</div>
+			</div>
+		`;
 
 		// 更新当前角度显示
 		elem("currentTheta").textContent = angleDeg;
 
 		// 计算并显示波束宽度
+		console.log(`updateCalculationSteps: 调用波束宽度更新, d/λ=${dLambdaRatio}, N=${nAnt}, ΔT=${deltaT}°`);
 		updateBeamWidthInfo(dLambdaRatio, nAnt, deltaT);
 
 		// 更新相位图
@@ -662,6 +688,9 @@ window.onload = () => {
 
 	// 波束宽度信息更新函数
 	function updateBeamWidthInfo(dLambdaRatio, nAnt, deltaT) {
+		// 调试：显示输入参数
+		console.log(`波束宽度调试: d/λ=${dLambdaRatio}, 天线数=${nAnt}, ΔT=${deltaT}°`);
+
 		// 计算半功率波束宽度
 		const deltaT_rad = (deltaT * Math.PI) / 180;
 
@@ -680,32 +709,49 @@ window.onload = () => {
 			const firstNull1 = Math.asin(sinThetaMain - 1 / (nAnt * dLambdaRatio));
 			const firstNull2 = Math.asin(sinThetaMain + 1 / (nAnt * dLambdaRatio));
 
+			// 调试：显示计算结果
+			console.log(`波束宽度计算: 主瓣方向=${(thetaMain * 180 / Math.PI).toFixed(2)}°, 半功率宽度=${beamWidth.toFixed(2)}°, 零点1=${(firstNull1 * 180 / Math.PI).toFixed(2)}°, 零点2=${(firstNull2 * 180 / Math.PI).toFixed(2)}°`);
+
 			beamWidthInfo = `
 				<div class="calc-step">
 					<h4>波束宽度信息</h4>
 					<div class="formula">半功率波束宽度 ≈ ${beamWidth.toFixed(1)}°</div>
-					<div class="calc-result">主瓣方向: ${(thetaMain * 180 / Math.PI).toFixed(1)}°</div>
+					<div class="calc-result">主瓣方向: <strong style="color: #ff6670; font-size: 1.2em;">${(thetaMain * 180 / Math.PI).toFixed(1)}°</strong></div>
 					<div class="calc-result">第一零点: ${(firstNull1 * 180 / Math.PI).toFixed(1)}°, ${(firstNull2 * 180 / Math.PI).toFixed(1)}°</div>
 					<div class="calc-result">零点间距: ${((firstNull2 - firstNull1) * 180 / Math.PI).toFixed(1)}°</div>
 				</div>
 			`;
 		} else {
+			// 调试：显示无效情况
+			console.log(`波束宽度计算: 主瓣方向无解, sinθ=${sinThetaMain.toFixed(3)} > 1`);
+
 			beamWidthInfo = `
-				<div class="calc-step">
-					<h4>波束宽度信息</h4>
-					<div class="calc-result">主瓣方向: 无解 (栅瓣条件)</div>
-				</div>
-			`;
+			<div class="calc-step">
+				<h4>波束宽度信息</h4>
+				<div class="calc-result">主瓣方向: 无解 (栅瓣条件)</div>
+			</div>
+		`;
 		}
 
 		// 更新或创建波束宽度信息
 		let beamWidthDiv = elem("beamWidthInfo");
 		if (!beamWidthDiv) {
+			console.log("波束宽度调试: 创建新的波束宽度信息div");
 			beamWidthDiv = document.createElement("div");
 			beamWidthDiv.id = "beamWidthInfo";
-			elem("calcSteps").appendChild(beamWidthDiv);
+			// 确保calcSteps存在
+			const calcSteps = elem("calcSteps");
+			if (calcSteps) {
+				calcSteps.appendChild(beamWidthDiv);
+				console.log("波束宽度调试: 成功添加到calcSteps");
+			} else {
+				console.error("波束宽度调试: 找不到calcSteps元素");
+			}
 		}
-		beamWidthDiv.innerHTML = beamWidthInfo;
+		if (beamWidthDiv) {
+			beamWidthDiv.innerHTML = beamWidthInfo;
+			console.log("波束宽度调试: 已更新波束宽度信息显示");
+		}
 	}
 
 	// 阵列因子曲线图更新函数
@@ -719,7 +765,7 @@ window.onload = () => {
 		if (!curveSvg) {
 			const curveDiv = document.createElement("div");
 			curveDiv.id = "curveDiv";
-			curveDiv.innerHTML = '<h4>阵列因子幅度曲线</h4><svg id="curveSvg" width="250" height="120"></svg>';
+			curveDiv.innerHTML = '<h4>阵列因子幅度曲线 (实线: 幅度, 虚线: dB)</h4><svg id="curveSvg" width="250" height="120"></svg><div id="curveInfo" style="font-size: 10px; margin-top: 5px;"></div>';
 			elem("calcSteps").appendChild(curveDiv);
 			curveSvg = elem("curveSvg");
 		}
@@ -736,6 +782,7 @@ window.onload = () => {
 		// 计算阵列因子数据
 		const angles = [];
 		const afValues = [];
+		const afDbValues = [];
 		const deltaT_rd = (deltaT * Math.PI) / 180;
 
 		for (let angle = -90; angle <= 90; angle += 2) {
@@ -750,13 +797,18 @@ window.onload = () => {
 			}
 
 			const afMagnitude = Math.sqrt(afReal * afReal + afImag * afImag) / nAnt;
+			const afPower = afMagnitude * afMagnitude;
+			const afDb = afPower > 0 ? 10 * Math.log10(afPower) : -40; // 避免log(0)
 			angles.push(angle);
 			afValues.push(afMagnitude);
+			afDbValues.push(afDb);
 		}
 
 		// 找到最大值和最小值
 		const maxAf = Math.max(...afValues);
 		const minAf = Math.min(...afValues);
+		const maxDb = Math.max(...afDbValues);
+		const minDb = Math.min(...afDbValues);
 
 		// 绘制坐标轴
 		const xAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -777,7 +829,7 @@ window.onload = () => {
 		yAxis.setAttribute("stroke-width", "1");
 		curveSvg.appendChild(yAxis);
 
-		// 绘制阵列因子曲线
+		// 绘制阵列因子幅度曲线
 		let pathData = "";
 		for (let i = 0; i < angles.length; i++) {
 			const x = margin + (angles[i] + 90) * plotWidth / 180;
@@ -792,26 +844,49 @@ window.onload = () => {
 		path.setAttribute("stroke-width", "2");
 		curveSvg.appendChild(path);
 
+		// 绘制阵列因子dB曲线（使用虚线）
+		let dbPathData = "";
+		for (let i = 0; i < angles.length; i++) {
+			const x = margin + (angles[i] + 90) * plotWidth / 180;
+			const y = height - margin - (afDbValues[i] - minDb) * plotHeight / (maxDb - minDb);
+			dbPathData += (i === 0 ? "M" : "L") + x + "," + y;
+		}
+
+		const dbPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+		dbPath.setAttribute("d", dbPathData);
+		dbPath.setAttribute("fill", "none");
+		dbPath.setAttribute("stroke", "#ff6670");
+		dbPath.setAttribute("stroke-width", "1.5");
+		dbPath.setAttribute("stroke-dasharray", "3,2");
+		curveSvg.appendChild(dbPath);
+
 		// 标记当前角度位置
 		const currentX = margin + (currentAngle + 90) * plotWidth / 180;
 		const currentIndex = Math.round((currentAngle + 90) / 2);
 		const currentY = height - margin - (afValues[currentIndex] - minAf) * plotHeight / (maxAf - minAf);
+		const currentDbY = height - margin - (afDbValues[currentIndex] - minDb) * plotHeight / (maxDb - minDb);
 
+		// 幅度标记（蓝色）
 		const marker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 		marker.setAttribute("cx", currentX);
 		marker.setAttribute("cy", currentY);
 		marker.setAttribute("r", "3");
-		marker.setAttribute("fill", "#ff6670");
+		marker.setAttribute("fill", "#56d4ff");
 		curveSvg.appendChild(marker);
 
-		// 添加标签
-		const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
-		label.setAttribute("x", currentX + 8);
-		label.setAttribute("y", currentY - 3);
-		label.setAttribute("fill", "#ffe970");
-		label.setAttribute("font-size", "8");
-		label.textContent = `${currentAngle}°`;
-		curveSvg.appendChild(label);
+		// dB标记（红色，稍微偏移）
+		const dbMarker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+		dbMarker.setAttribute("cx", currentX);
+		dbMarker.setAttribute("cy", currentDbY);
+		dbMarker.setAttribute("r", "2");
+		dbMarker.setAttribute("fill", "#ff6670");
+		curveSvg.appendChild(dbMarker);
+
+		// 添加dB值信息到页面
+		const curveInfo = elem("curveInfo");
+		if (curveInfo) {
+			curveInfo.innerHTML = `当前角度 ${currentAngle}°: 幅度 = ${afValues[currentIndex].toFixed(3)}, dB = ${afDbValues[currentIndex].toFixed(1)} dB`;
+		}
 	}
 
 	// 相位图更新函数
@@ -931,16 +1006,32 @@ window.onload = () => {
 	// 设置角度滑块事件
 	angleSlider.oninput = function () {
 		const angle = parseInt(this.value);
+		console.log(`角度滑块变化: ${angle}°`);
 		updateCalculationSteps(angle);
+		updateBeamIndicator(angle);
+		updatePlot(); // 添加这一行来更新波束宽度信息
 	};
 
 	// 参数滑块变化时也更新计算过程
 	const originalUpdatePlot = updatePlot;
 	updatePlot = function () {
+		console.log("updatePlot: 开始更新");
 		originalUpdatePlot();
 		const currentAngle = parseInt(angleSlider.value);
+		console.log(`updatePlot: 当前角度=${currentAngle}°`);
 		updateCalculationSteps(currentAngle);
 		updateBeamIndicator(currentAngle);
+
+		// 调试：显示当前参数和主瓣方向
+		const dLambdaRatio = parseFloat(slider_dLambdaRatio.value);
+		const deltaT = parseFloat(slider_deltaT.value);
+		const sinTheta = (deltaT * Math.PI) / 180 / (2 * Math.PI * dLambdaRatio);
+		if (Math.abs(sinTheta) <= 1) {
+			const thetaMain = Math.asin(sinTheta) * (180 / Math.PI);
+			console.log(`调试: deltaT=${deltaT}°, d/λ=${dLambdaRatio}, 主瓣方向=${thetaMain.toFixed(2)}°`);
+		} else {
+			console.log(`调试: deltaT=${deltaT}°, d/λ=${dLambdaRatio}, 主瓣方向=无解`);
+		}
 	};
 
 	// 波束指向指示器
