@@ -594,6 +594,394 @@ window.onload = () => {
 		elem("boxViewWrap").style.transform = `scale(${ratio})`;
 	}
 
+	// 计算过程可视化函数
+	function updateCalculationSteps(angleDeg) {
+		const dLambdaRatio = parseFloat(slider_dLambdaRatio.value);
+		const nAnt = parseInt(slider_nAnt.value);
+		const deltaT = parseFloat(slider_deltaT.value);
+		const angleRad = (angleDeg * Math.PI) / 180;
+
+		// 物理常数
+		const c0 = 299792458; // 光速 m/s
+		const lambda0 = 1.0; // 假设波长为1米
+		const omega0 = (2 * Math.PI * c0) / lambda0;
+
+		// 步骤1: 计算相邻天线时间延迟 Δτ
+		const deltaTau = (dLambdaRatio * lambda0 * Math.sin(angleRad)) / c0;
+		elem("calc_deltaTau").innerHTML = `Δτ = (${dLambdaRatio.toFixed(3)} × ${lambda0} × sin(${angleDeg}°)) / ${c0.toExponential(2)} = ${deltaTau.toExponential(3)} s`;
+
+		// 步骤2: 计算相位差 Δψ
+		const deltaPsi = 2 * Math.PI * dLambdaRatio * Math.sin(angleRad);
+		elem("calc_deltaPsi").innerHTML = `Δψ = 2π × ${dLambdaRatio.toFixed(3)} × sin(${angleDeg}°) = ${deltaPsi.toFixed(3)} rad = ${(deltaPsi * 180 / Math.PI).toFixed(1)}°`;
+
+		// 步骤3: 计算控制相位 ΔΨ
+		const deltaT_rad = (deltaT * Math.PI) / 180;
+		const deltaPhi = deltaPsi - deltaT_rad;
+		elem("calc_deltaPhi").innerHTML = `ΔΨ = ${deltaPsi.toFixed(3)} - ${deltaT}° = ${deltaPhi.toFixed(3)} rad = ${(deltaPhi * 180 / Math.PI).toFixed(1)}°`;
+
+		// 步骤4: 计算主瓣方向
+		let mainLobeAngleDeg = 0;
+		let mainLobeStatus = "";
+		const sinTheta = (deltaT * Math.PI) / 180 / (2 * Math.PI * dLambdaRatio);
+
+		if (Math.abs(sinTheta) <= 1) {
+			mainLobeAngleDeg = Math.asin(sinTheta) * (180 / Math.PI);
+			mainLobeStatus = `θ<sub>MainLobe</sub> = arcsin((${deltaT}° × ${lambda0}) / (2π × ${dLambdaRatio.toFixed(3)} × ${lambda0})) = ${mainLobeAngleDeg.toFixed(1)}°`;
+		} else {
+			mainLobeStatus = `θ<sub>MainLobe</sub> = 无解 (|sinθ| = ${Math.abs(sinTheta).toFixed(3)} > 1)`;
+		}
+		elem("calc_mainLobeAngle").innerHTML = mainLobeStatus;
+
+		// 步骤5: 计算阵列因子
+		let afReal = 0;
+		let afImag = 0;
+		for (let j = 0; j < nAnt; ++j) {
+			const tau = -j * deltaPhi;
+			afReal += Math.cos(tau);
+			afImag += Math.sin(tau);
+		}
+		const afMagnitude = Math.sqrt(afReal * afReal + afImag * afImag);
+		const afPowerDb = 10 * Math.log10((afReal * afReal + afImag * afImag) / 4);
+		elem("calc_arrayFactor").innerHTML = `ArrayFactor = ${afMagnitude.toFixed(3)} ∠ ${(Math.atan2(afImag, afReal) * 180 / Math.PI).toFixed(1)}° = ${afPowerDb.toFixed(2)} dB`;
+
+		// 更新当前角度显示
+		elem("currentTheta").textContent = angleDeg;
+
+		// 计算并显示波束宽度
+		updateBeamWidthInfo(dLambdaRatio, nAnt, deltaT);
+
+		// 更新相位图
+		updatePhaseDiagram(deltaPhi, nAnt);
+
+		// 更新天线阵列图
+		updateArrayDiagram(deltaPhi, nAnt);
+
+		// 更新阵列因子曲线图
+		updateArrayFactorCurve(angleDeg);
+	}
+
+	// 波束宽度信息更新函数
+	function updateBeamWidthInfo(dLambdaRatio, nAnt, deltaT) {
+		// 计算半功率波束宽度
+		const deltaT_rad = (deltaT * Math.PI) / 180;
+
+		// 计算主瓣方向
+		const sinThetaMain = (deltaT * Math.PI) / 180 / (2 * Math.PI * dLambdaRatio);
+		let thetaMain = 0;
+		let beamWidthInfo = "";
+
+		if (Math.abs(sinThetaMain) <= 1) {
+			thetaMain = Math.asin(sinThetaMain);
+
+			// 近似计算半功率波束宽度
+			const beamWidth = 50.8 / (nAnt * dLambdaRatio * Math.cos(thetaMain)); // 近似公式
+
+			// 计算第一零点位置
+			const firstNull1 = Math.asin(sinThetaMain - 1 / (nAnt * dLambdaRatio));
+			const firstNull2 = Math.asin(sinThetaMain + 1 / (nAnt * dLambdaRatio));
+
+			beamWidthInfo = `
+				<div class="calc-step">
+					<h4>波束宽度信息</h4>
+					<div class="formula">半功率波束宽度 ≈ ${beamWidth.toFixed(1)}°</div>
+					<div class="calc-result">主瓣方向: ${(thetaMain * 180 / Math.PI).toFixed(1)}°</div>
+					<div class="calc-result">第一零点: ${(firstNull1 * 180 / Math.PI).toFixed(1)}°, ${(firstNull2 * 180 / Math.PI).toFixed(1)}°</div>
+					<div class="calc-result">零点间距: ${((firstNull2 - firstNull1) * 180 / Math.PI).toFixed(1)}°</div>
+				</div>
+			`;
+		} else {
+			beamWidthInfo = `
+				<div class="calc-step">
+					<h4>波束宽度信息</h4>
+					<div class="calc-result">主瓣方向: 无解 (栅瓣条件)</div>
+				</div>
+			`;
+		}
+
+		// 更新或创建波束宽度信息
+		let beamWidthDiv = elem("beamWidthInfo");
+		if (!beamWidthDiv) {
+			beamWidthDiv = document.createElement("div");
+			beamWidthDiv.id = "beamWidthInfo";
+			elem("calcSteps").appendChild(beamWidthDiv);
+		}
+		beamWidthDiv.innerHTML = beamWidthInfo;
+	}
+
+	// 阵列因子曲线图更新函数
+	function updateArrayFactorCurve(currentAngle) {
+		const dLambdaRatio = parseFloat(slider_dLambdaRatio.value);
+		const nAnt = parseInt(slider_nAnt.value);
+		const deltaT = parseFloat(slider_deltaT.value);
+
+		// 创建或更新曲线图
+		let curveSvg = elem("curveSvg");
+		if (!curveSvg) {
+			const curveDiv = document.createElement("div");
+			curveDiv.id = "curveDiv";
+			curveDiv.innerHTML = '<h4>阵列因子幅度曲线</h4><svg id="curveSvg" width="250" height="120"></svg>';
+			elem("calcSteps").appendChild(curveDiv);
+			curveSvg = elem("curveSvg");
+		}
+
+		// 清空SVG
+		curveSvg.innerHTML = "";
+
+		const width = 250;
+		const height = 120;
+		const margin = 15;
+		const plotWidth = width - 2 * margin;
+		const plotHeight = height - 2 * margin;
+
+		// 计算阵列因子数据
+		const angles = [];
+		const afValues = [];
+		const deltaT_rd = (deltaT * Math.PI) / 180;
+
+		for (let angle = -90; angle <= 90; angle += 2) {
+			const angleRad = (angle * Math.PI) / 180;
+			let afReal = 0;
+			let afImag = 0;
+
+			for (let j = 0; j < nAnt; ++j) {
+				const tau = -j * (2 * Math.PI * dLambdaRatio * Math.sin(angleRad) - deltaT_rd);
+				afReal += Math.cos(tau);
+				afImag += Math.sin(tau);
+			}
+
+			const afMagnitude = Math.sqrt(afReal * afReal + afImag * afImag) / nAnt;
+			angles.push(angle);
+			afValues.push(afMagnitude);
+		}
+
+		// 找到最大值和最小值
+		const maxAf = Math.max(...afValues);
+		const minAf = Math.min(...afValues);
+
+		// 绘制坐标轴
+		const xAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+		xAxis.setAttribute("x1", margin);
+		xAxis.setAttribute("y1", height - margin);
+		xAxis.setAttribute("x2", width - margin);
+		xAxis.setAttribute("y2", height - margin);
+		xAxis.setAttribute("stroke", "#666");
+		xAxis.setAttribute("stroke-width", "1");
+		curveSvg.appendChild(xAxis);
+
+		const yAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
+		yAxis.setAttribute("x1", margin);
+		yAxis.setAttribute("y1", margin);
+		yAxis.setAttribute("x2", margin);
+		yAxis.setAttribute("y2", height - margin);
+		yAxis.setAttribute("stroke", "#666");
+		yAxis.setAttribute("stroke-width", "1");
+		curveSvg.appendChild(yAxis);
+
+		// 绘制阵列因子曲线
+		let pathData = "";
+		for (let i = 0; i < angles.length; i++) {
+			const x = margin + (angles[i] + 90) * plotWidth / 180;
+			const y = height - margin - (afValues[i] - minAf) * plotHeight / (maxAf - minAf);
+			pathData += (i === 0 ? "M" : "L") + x + "," + y;
+		}
+
+		const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+		path.setAttribute("d", pathData);
+		path.setAttribute("fill", "none");
+		path.setAttribute("stroke", "#56d4ff");
+		path.setAttribute("stroke-width", "2");
+		curveSvg.appendChild(path);
+
+		// 标记当前角度位置
+		const currentX = margin + (currentAngle + 90) * plotWidth / 180;
+		const currentIndex = Math.round((currentAngle + 90) / 2);
+		const currentY = height - margin - (afValues[currentIndex] - minAf) * plotHeight / (maxAf - minAf);
+
+		const marker = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+		marker.setAttribute("cx", currentX);
+		marker.setAttribute("cy", currentY);
+		marker.setAttribute("r", "3");
+		marker.setAttribute("fill", "#ff6670");
+		curveSvg.appendChild(marker);
+
+		// 添加标签
+		const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+		label.setAttribute("x", currentX + 8);
+		label.setAttribute("y", currentY - 3);
+		label.setAttribute("fill", "#ffe970");
+		label.setAttribute("font-size", "8");
+		label.textContent = `${currentAngle}°`;
+		curveSvg.appendChild(label);
+	}
+
+	// 相位图更新函数
+	function updatePhaseDiagram(deltaPhi, nAnt) {
+		// 创建或更新相位图
+		let phaseSvg = elem("phaseSvg");
+		if (!phaseSvg) {
+			// 创建相位图容器
+			const phaseDiv = document.createElement("div");
+			phaseDiv.id = "phaseDiv";
+			phaseDiv.innerHTML = '<h4>天线相位关系图</h4><svg id="phaseSvg" width="250" height="180"></svg>';
+			elem("calcSteps").appendChild(phaseDiv);
+			phaseSvg = elem("phaseSvg");
+		}
+
+		// 清空SVG
+		phaseSvg.innerHTML = "";
+
+		const centerX = 125;
+		const centerY = 90;
+		const radius = 60;
+
+		// 绘制坐标轴
+		for (let i = 0; i < nAnt; i++) {
+			const phase = i * deltaPhi;
+			const x = centerX + radius * Math.cos(phase);
+			const y = centerY + radius * Math.sin(phase);
+
+			// 绘制相位向量
+			const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+			line.setAttribute("x1", centerX);
+			line.setAttribute("y1", centerY);
+			line.setAttribute("x2", x);
+			line.setAttribute("y2", y);
+			line.setAttribute("stroke", "#56d4ff");
+			line.setAttribute("stroke-width", "2");
+			phaseSvg.appendChild(line);
+
+			// 绘制天线编号
+			const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+			text.setAttribute("x", x + 8);
+			text.setAttribute("y", y + 4);
+			text.setAttribute("fill", "#ffe970");
+			text.setAttribute("font-size", "10");
+			text.textContent = `A${i}`;
+			phaseSvg.appendChild(text);
+		}
+
+		// 绘制参考圆
+		const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+		circle.setAttribute("cx", centerX);
+		circle.setAttribute("cy", centerY);
+		circle.setAttribute("r", radius);
+		circle.setAttribute("fill", "none");
+		circle.setAttribute("stroke", "#666");
+		circle.setAttribute("stroke-dasharray", "5,5");
+		phaseSvg.appendChild(circle);
+	}
+
+	// 天线阵列图更新函数
+	function updateArrayDiagram(deltaPhi, nAnt) {
+		// 创建或更新阵列图
+		let arraySvg = elem("arraySvg");
+		if (!arraySvg) {
+			// 创建阵列图容器
+			const arrayDiv = document.createElement("div");
+			arrayDiv.id = "arrayDiv";
+			arrayDiv.innerHTML = '<h4>天线阵列几何图</h4><svg id="arraySvg" width="250" height="120"></svg>';
+			elem("calcSteps").appendChild(arrayDiv);
+			arraySvg = elem("arraySvg");
+		}
+
+		// 清空SVG
+		arraySvg.innerHTML = "";
+
+		const startX = 40;
+		const spacing = 170 / Math.max(nAnt - 1, 1);
+		const centerY = 60;
+
+		// 绘制天线阵列
+		for (let i = 0; i < nAnt; i++) {
+			const x = startX + i * spacing;
+
+			// 绘制天线元素
+			const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+			circle.setAttribute("cx", x);
+			circle.setAttribute("cy", centerY);
+			circle.setAttribute("r", "6");
+			circle.setAttribute("fill", "#56d4ff");
+			circle.setAttribute("stroke", "#ffe970");
+			circle.setAttribute("stroke-width", "1.5");
+			arraySvg.appendChild(circle);
+
+			// 绘制相位指示器
+			const phase = i * deltaPhi;
+			const phaseText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+			phaseText.setAttribute("x", x);
+			phaseText.setAttribute("y", centerY - 15);
+			phaseText.setAttribute("fill", "#ff6670");
+			phaseText.setAttribute("font-size", "8");
+			phaseText.setAttribute("text-anchor", "middle");
+			phaseText.textContent = `${(phase * 180 / Math.PI).toFixed(0)}°`;
+			arraySvg.appendChild(phaseText);
+
+			// 绘制天线编号
+			const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+			label.setAttribute("x", x);
+			label.setAttribute("y", centerY + 20);
+			label.setAttribute("fill", "#ffe970");
+			label.setAttribute("font-size", "10");
+			label.setAttribute("text-anchor", "middle");
+			label.textContent = `A${i}`;
+			arraySvg.appendChild(label);
+		}
+	}
+
+	// 设置角度滑块事件
+	angleSlider.oninput = function () {
+		const angle = parseInt(this.value);
+		updateCalculationSteps(angle);
+	};
+
+	// 参数滑块变化时也更新计算过程
+	const originalUpdatePlot = updatePlot;
+	updatePlot = function () {
+		originalUpdatePlot();
+		const currentAngle = parseInt(angleSlider.value);
+		updateCalculationSteps(currentAngle);
+		updateBeamIndicator(currentAngle);
+	};
+
+	// 波束指向指示器
+	function updateBeamIndicator(angleDeg) {
+		// 在极坐标图上添加当前角度指示器
+		const existingIndicator = elem("beamIndicator");
+		if (existingIndicator) {
+			existingIndicator.remove();
+		}
+
+		// 获取SVG元素
+		const svg = elem("display");
+		if (!svg) return;
+
+		// 创建指示器线
+		const angleRad = (angleDeg * Math.PI) / 180;
+		const centerX = 300; // 假设中心在300,300
+		const centerY = 300;
+		const radius = 200;
+
+		const endX = centerX + radius * Math.cos(angleRad - Math.PI / 2); // -90度调整因为SVG坐标系
+		const endY = centerY + radius * Math.sin(angleRad - Math.PI / 2);
+
+		const indicator = document.createElementNS("http://www.w3.org/2000/svg", "line");
+		indicator.id = "beamIndicator";
+		indicator.setAttribute("x1", centerX);
+		indicator.setAttribute("y1", centerY);
+		indicator.setAttribute("x2", endX);
+		indicator.setAttribute("y2", endY);
+		indicator.setAttribute("stroke", "#ff6670");
+		indicator.setAttribute("stroke-width", "3");
+		indicator.setAttribute("stroke-dasharray", "5,5");
+		indicator.setAttribute("opacity", "0.8");
+
+		svg.appendChild(indicator);
+	}
+
 	updatePlot();
 	autoScalling();
+
+	// 初始化计算步骤显示
+	updateCalculationSteps(0);
+	updateBeamIndicator(0);
 };

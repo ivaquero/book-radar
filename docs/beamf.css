@@ -42,7 +42,8 @@ p {
 
 #boxViewWrap {
     margin: 0 auto;
-    width: 600px;
+    width: 800px;
+    max-width: 95%;
 }
 
 #boxViewWrap>h2 {
@@ -68,16 +69,20 @@ p {
 }
 
 #displayDiv {
-    width: 600px;
+    width: 100%;
     text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 #inputDiv {
-    width: 550px;
+    width: 100%;
+    max-width: 550px;
     text-align: center;
     border: 2px solid #ffe970;
     border-radius: 8px;
     background-color: black;
+    margin: 0 auto;
 }
 
 #input_left {
@@ -140,7 +145,8 @@ p {
 }
 
 .intro {
-    width: 550px;
+    width: 100%;
+    max-width: 550px;
     display: block;
     font-size: 16px;
     text-align: center;
@@ -148,6 +154,7 @@ p {
     border-radius: 8px;
     background-color: black;
     color: white;
+    margin: 0 auto;
 }
 
 .intro>h3 {
@@ -238,49 +245,73 @@ input[type="range"]::-webkit-slider-thumb {
 
 /* 计算过程可视化样式 */
 #calcDiv {
-    margin-top: 20px;
+    margin-top: 15px;
+}
+
+#calcDiv h3 {
+    font-size: 18px;
+    padding: 10px 10px 5px 10px;
 }
 
 .calc-step {
-    margin: 15px 0;
+    margin: 0;
     padding: 10px;
     border-left: 3px solid #ffe970;
     background-color: rgba(255, 233, 112, 0.1);
+    flex: 1;
+    min-width: 250px;
+    box-sizing: border-box;
 }
 
 .calc-step h4 {
     color: #ffe970;
-    font-size: 16px;
-    margin-bottom: 8px;
+    font-size: 14px;
+    margin-bottom: 5px;
+    line-height: 1.2;
 }
 
 .formula {
     font-family: "Helvetica", sans-serif;
     color: #56d4ff;
-    font-size: 14px;
-    margin: 5px 0;
-    padding: 5px;
+    font-size: 12px;
+    margin: 3px 0;
+    padding: 3px;
     background-color: rgba(86, 212, 255, 0.1);
     border-radius: 4px;
+    word-break: break-all;
 }
 
 .calc-result {
     color: #ff6670;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: bold;
-    margin: 8px 0;
-    padding: 8px;
+    margin: 5px 0;
+    padding: 5px;
     background-color: rgba(255, 102, 112, 0.1);
     border-radius: 4px;
-    min-height: 20px;
+    min-height: 15px;
+    word-break: break-all;
 }
 
 #currentAngle {
-    margin-top: 20px;
-    padding: 15px;
+    margin: 10px 0;
+    padding: 10px;
     background-color: rgba(255, 233, 112, 0.1);
     border-radius: 8px;
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#currentAngle h4 {
+    color: #ffe970;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+#angleSlider {
+    width: 90%;
+    max-width: 300px;
 }
 
 #currentAngle h4 {
@@ -294,7 +325,42 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 #calcSteps {
-    max-height: 400px;
-    overflow-y: auto;
-    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px;
+    justify-content: flex-start;
+}
+
+/* 可视化图表容器样式 */
+#phaseDiv,
+#arrayDiv,
+#curveDiv,
+#beamWidthInfo {
+    margin: 8px 0;
+    padding: 8px;
+    background-color: rgba(255, 233, 112, 0.05);
+    border-radius: 8px;
+    text-align: center;
+    flex: 1;
+    min-width: 260px;
+    box-sizing: border-box;
+}
+
+#phaseDiv h4,
+#arrayDiv h4,
+#curveDiv h4 {
+    color: #ffe970;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+#phaseSvg,
+#arraySvg,
+#curveSvg {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    margin: 0 auto;
+    max-width: 100%;
+    display: block;
 }
