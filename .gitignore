@@ -1,16 +1,11 @@
-# General
 .DS_Store
 
-# Thumbnails
 ._*
 
-######################
-# Python
 __pycache__/
 
-##########
-# Extra
 articles
+.workbuddy
 *.out
 test.*
 
