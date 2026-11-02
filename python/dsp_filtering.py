@@ -3,6 +3,9 @@ import marimo
 __generated_with = "0.22.4"
 app = marimo.App(width="full")
 
+# Set SAVE_FIGS = True (and run the notebook) to regenerate the book figures.
+SAVE_FIGS = False
+
 
 @app.cell
 def _():
@@ -61,7 +64,8 @@ def _(np, plt, signal):
     ax.set(xlabel="Timesteps", ylabel="Signal", xticks=np.arange(0, 20, 2))
     ax.legend()
 
-    # plt.savefig("../images/filter-fir-iir.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/filter-fir-iir.png")
     plt.show()
     return
 
@@ -94,7 +98,8 @@ def _(np, plt, signal):
     ax1.plot(x_med, label="median")
     ax1.set(xlim=[0, 19], xticks=np.arange(0, 20, 2))
     ax1.legend()
-    # plt.savefig("../images/filter-morph.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/filter-morph.png")
     plt.show()
     return
 
@@ -148,7 +153,8 @@ def _(aa, bb, np, plt, signal):
         ax_.tick_params(axis="x", labelbottom=False)
 
     axs[1].set(xlabel="n * T")
-    # plt.savefig("../images/filter-response.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/filter-response.png")
     return
 
 
@@ -199,7 +205,8 @@ def _(aa, bb, np, plt, signal):
     selPhase = np.rad2deg(np.arctan2(selFreq_h.imag, selFreq_h.real))
     axfs[0].plot(selFreq_w, seldB, "b*")
     axfs[1].plot(selFreq_w, selPhase, "b*")
-    # plt.savefig("../images/filter-response-freq.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/filter-response-freq.png")
     plt.show()
     return selFreq_h, selFreq_w, selPhase
 
@@ -253,7 +260,8 @@ def _(aa, bb, np, plt, selFreq_w, signal):
     # Plot them
     ax2.plot(tMaxIn, sndMaxIn, "b*")
     ax2.plot(tMaxOut, sndMaxFiltered, "r*")
-    # plt.savefig("../images/filter-response-nyq.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/filter-response-nyq.png")
     plt.show()
     return gain_est, phase_est
 
@@ -298,7 +306,8 @@ def _(avg24hTempC, coef_24h, np, plt, tempC):
         xlabel="Time elapsed from Jan 1, 2011 (days)",
         ylabel="Temp ($ ^∘ $C)",
     )
-    # plt.savefig("../images/filter-ma.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/filter-ma.png")
     return days, fDelay
 
 
@@ -338,7 +347,8 @@ def _(days, interpolate, plt, signal, tempC):
         xlabel="Time elapsed from Jan 1, 2011 (days)",
         ylabel="Temp ($^∘$C)",
     )
-    # plt.savefig("../images/filter-peaks.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/filter-peaks.png")
     return (ax_p,)
 
 
@@ -361,7 +371,8 @@ def _(ax_p, days, np, plt, signal, tempC):
         xlabel="Time elapsed from Jan 1, 2011 (days)",
         ylabel="Temp ($^∘$C)",
     )
-    # plt.savefig("../images/filter-binom.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/filter-binom.png")
     return binomMA, fDelay_b
 
 
@@ -382,7 +393,8 @@ def _(binomMA, days, fDelay, np, plt, signal, tempC):
         xlabel="Time elapsed from Jan 1, 2011 (days)",
         ylabel="Temp ($^∘$C)",
     )
-    # plt.savefig("../images/filter-expon.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/filter-expon.png")
     return (exponMA,)
 
 
@@ -431,7 +443,8 @@ def _(days, plt, signal, tempC):
         xlim=[3, 4],
         ylim=[-5, 2],
     )
-    # plt.savefig("../images/filer-savgol.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/find-savgol.png")
     plt.show()
     return
 
@@ -485,7 +498,8 @@ def _(integrate, np, patches, plt):
     axs2[2].set(xlabel="Time [s]", ylabel="Distance [m]", xlim=[0, len(vel) - 1])
 
     # Save and show the image
-    # plt.savefig("../images/filter-integ.jpg")
+    if SAVE_FIGS:
+        plt.savefig("../images/filter-integ.jpg")
     plt.show()
     return
 
@@ -568,7 +582,8 @@ def _(np, plt):
 
     # Format the plot
     ax_sp.set(xlim=(0, 4), ylim=(0, 1.1), xticks=(np.arange(5)))
-    # plt.savefig("../images/filter-spline-b.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/filter-spline-b.png")
 
     plt.show()
     return
@@ -721,7 +736,8 @@ def _(explain_KDE, np, plot_histogram, plt):
 
     # Generate the right plot
     explain_KDE(ax_k[1], x_k)
-    # plt.savefig("../images/filter-kde.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/filter-kde.png")
     plt.show()
     return
 

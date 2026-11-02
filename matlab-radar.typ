@@ -1,6 +1,8 @@
 #import "lib/lib.typ": *
 #show: chapter-style.with(title: "相关工具箱 API", info: info)
 
+本附录 API 清单以 MATLAB R2025a 为基准。各命令的权威说明见 #link("https://ww2.mathworks.cn/help/releases/R2025a/radar/index.html")[Radar Toolbox] 与 #link("https://ww2.mathworks.cn/help/releases/R2025a/driving/index.html")[Automated Driving Toolbox] 文档；函数随版本增删，核对时以上述页面为准。
+
 = 雷达
 
 - APP

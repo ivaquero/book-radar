@@ -3,6 +3,9 @@ import marimo
 __generated_with = "0.22.4"
 app = marimo.App(width="full")
 
+# Set SAVE_FIGS = True (and run the notebook) to regenerate the book figures.
+SAVE_FIGS = False
+
 
 @app.cell
 def _():
@@ -36,7 +39,8 @@ def _(io, plt):
     ax2.plot(ecgnl["ecgnl"])
     ax2.set(ylabel="Voltage (mV)")
     fig_ecg.suptitle("ECG Signals with Trends")
-    # plt.savefig("../images/find-trend.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/find-trend.png")
     return ecgl, ecgnl
 
 
@@ -64,7 +68,8 @@ def _(ecgl, ecgnl, plt, signal):
     ax_2.plot(dt_ecgnl)
     ax_2.set(ylabel="Voltage (mV)")
     fig_ecgd.suptitle("Detrended ECG Signals")
-    # plt.savefig("../images/find-trend2.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/find-trend2.png")
     return
 
 
@@ -98,7 +103,8 @@ def _(Fs, np, plt, signal):
         xticks=np.arange(0, 501, 50),
     )
     ax_bw.grid()
-    # plt.savefig("../images/find-butterworth.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/find-butterworth.png")
     plt.show()
     return denom, nom
 
@@ -123,7 +129,8 @@ def _(Fs, denom, nom, np, openLoop, plt, signal):
     )
     ax_bwf.legend()
     ax_bwf.grid()
-    # plt.savefig("../images/find-filtfilter.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/find-filtfilter.png")
     plt.show()
     return t_volt, x_volt
 
@@ -147,7 +154,8 @@ def _(plt, signal, t_volt, x_volt):
     )
     ax_bwf2.legend()
     ax_bwf2.grid()
-    # plt.savefig("../images/find-savgol.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/find-savgol.png")
     plt.show()
     return
 
@@ -176,7 +184,8 @@ def _(Fs, np, plt, signal, x_volt):
         ylim=(-9, -7.2),
     )
     ax_rs.legend()
-    # plt.savefig("../images/find-resample.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/find-resample.png")
     return
 
 
@@ -199,7 +208,8 @@ def _(np, plt, signal, train_wnoise):
     )
     ax_hp.legend()
     ax_hp.set(xlim=[0, 14000], ylim=[-1, 2.5])
-    # plt.savefig("../images/filter-med.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/filter-med.png")
     plt.show()
     return
 
@@ -211,6 +221,45 @@ def _(mo):
     """)
     return
 
+@app.cell
+def hampel(x, k, n_sigma=3):
+    """
+    x: series of values from which to remove outliers
+    k: size of window/2
+    n_sigma: number of standard deviations to use; 3 is standard
+    """
+    arraySize = len(x)
+    idx = np.arange(arraySize)
+    output_x = x.copy()
+    output_idx = np.zeros_like(x)
+
+    for i in range(arraySize):
+        mask1 = np.where(idx >= (idx[i] - k), True, False)
+        mask2 = np.where(idx <= (idx[i] + k), True, False)
+        kernel = np.logical_and(mask1, mask2)
+        median = np.median(x[kernel])
+        std = 1.4826 * np.median(np.abs(x[kernel] - median))
+        if np.abs(x[i] - median) > n_sigma * std:
+            output_idx[i] = 1
+            output_x[i] = median
+
+    return output_x, output_idx.astype(bool)
+
+
+@app.cell
+def _(hampel, np, plt, train_wnoise):
+    hamp, idx_out = hampel(train_wnoise, 5, 3)
+    _, ax_hamp = plt.subplots(figsize=(8, 4))
+    ax_hamp.scatter(np.arange(12880) + 1, train_wnoise, s=1)
+    ax_hamp.plot(train_wnoise, label="original signal", alpha=0.5)
+    ax_hamp.plot(hamp, label="Hampel filtered signal", alpha=0.8)
+    ax_hamp.legend()
+    ax_hamp.set(xlim=[0, 14000], ylim=[-1, 2.5])
+    if SAVE_FIGS:
+        plt.savefig("../images/filter-hampel.png")
+    plt.show()
+    return
+
 
 @app.cell(hide_code=True)
 def _(mo):
@@ -218,6 +267,7 @@ def _(mo):
     ## Finding Simple Features
     """)
     return
+
 
 
 @app.cell(hide_code=True)
@@ -468,7 +518,8 @@ def _(corr_vis, np, plt):
     feat[2:5] = 1
 
     corr_vis(feat, sig)
-    # plt.savefig("../images/cross-corr.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/cross-corr.png")
     plt.show()
     return
 
@@ -537,7 +588,8 @@ def _(np, plt):
 
     ax_acs[0, 0].set(title="Signals")
     ax_acs[0, 1].set(title="Auto-Correlations")
-    # plt.savefig("../images/find-autocorr.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/find-autocorr.png")
     plt.show()
     return
 
@@ -566,7 +618,8 @@ def _(interpolate, np, plt):
     ax_ip.set(yticks=np.linspace(-1, 1, 5))
     ax_ip.axhline(0, linestyle="dotted")
     ax_ip.legend()
-    # plt.savefig("../images/find-interpol.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/find-interpol.png")
     return
 
 

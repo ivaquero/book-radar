@@ -3,6 +3,9 @@ import marimo
 __generated_with = "0.22.4"
 app = marimo.App(width="full")
 
+# Set SAVE_FIGS = True (and run the notebook) to regenerate the book figures.
+SAVE_FIGS = False
+
 
 @app.cell
 def _():
@@ -109,7 +112,8 @@ def _(np, plt):
 def _(generate_data, plt, power_spectrum):
     data = generate_data()
     power_spectrum(*data)
-    # plt.savefig("../images/spectral-sample.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/spectral-sample.png")
     plt.show()
     return (data,)
 
@@ -239,7 +243,8 @@ def _(np, plt):
 @app.cell
 def _(Pxx, fourier_intro, freq, plt, sound_data, time, time_slice):
     fourier_intro(time, sound_data, freq, Pxx, time_slice)
-    # plt.savefig("../images/spectral-sound.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/spectral-sound.png")
     plt.show()
     return
 
@@ -284,7 +289,8 @@ def _(plt):
 @app.cell
 def _(Pxx, freq, linear_and_log, plt):
     linear_and_log(freq, Pxx)
-    # plt.savefig("../images/spectral-periodo.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/spectral-periodo.png")
     plt.show()
     return
 
@@ -322,7 +328,8 @@ def _(freq, np, plt):
 @app.cell
 def _(Pxx, duration, noise_effects, plt, sound_data, time, time_slice):
     noise_effects(time, sound_data, Pxx, time_slice, duration)
-    # plt.savefig("../images/spectral-periodo-noise.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/spectral-periodo-noise.png")
     plt.show()
     return
 
@@ -365,7 +372,8 @@ def _(np, plt, signal):
 @app.cell
 def _(Pxx, freq, plt, rate, sound_data, welch_periodogram):
     welch_periodogram(sound_data, rate, freq, Pxx)
-    # plt.savefig("../images/spectral-periodo-welch.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/spectral-periodo-welch.png")
     plt.show()
     return
 
@@ -434,7 +442,8 @@ def _(io, np, plt, signal, time):
     for ax in ax_w.ravel():
         ax.margins(x=0)
 
-    # plt.savefig("../images/spectral-window.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/spectral-window.png")
     plt.show()
     return
 
@@ -532,7 +541,8 @@ def _(np, plt, showData, signal):
 
     ax_h[2, 0].set(xlabel="Time (s)")
     ax_h[2, 1].set(xlabel="Frequency (Hz)")
-    # plt.savefig("../images/spectral-hann.png")
+    if SAVE_FIGS:
+        plt.savefig("../images/spectral-hann.png")
     plt.show()
     return
 
