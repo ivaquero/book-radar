@@ -1,7 +1,11 @@
 #import "lib/lib.typ": *
-#show: chapter-style.with(title: "信号处理", info: info)
+#show: chapter-style.with(title: "信号处理：滤波与平滑", info: info)
 
 = 滤波器
+
+#tip[
+  本章与后续章节中的 Python 片段仅示意关键步骤，其中引用的部分变量（如 `tempC`）在仓库 `python/` 下对应的 marimo notebook 中先行定义；完整可运行版本见相应 notebook。
+]
 
 == 传递函数
 
@@ -352,7 +356,7 @@ $
 
 其中，$𝑰[...]$是指示函数，指示函数参数为 True 的范围：在此范围内函数等于 1，否则为 0。lowess 和 loess 的不同之处在于它们用于回归的模型：lowess 使用线性多项式，而 loess 使用二次多项式。
 
-== 样条
+== 样条 <splines>
 
 样条（spline）不仅可用于插值，还可用于数据平滑和微分。如今，样条函数被定义为变量$x$中次数$< k$的分段多项式函数。 $k$称为样条的次数（degree），$k + 1$称为样条的阶数（order）。
 

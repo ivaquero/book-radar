@@ -46,8 +46,10 @@ $
 其中，$P_t$和$P_r$分别为（雷达）峰值发射功率和峰值接收功率，$G_t$和$G_r$分别为（天线）发射增益和接收增益，$R$为（目标）探测距离，$σ$为雷达反射截面积（radar cross section，RCS），$L$为（系统）能量损失，$F$为传播因子，$λ$为信号波长。其中
 
 $
-  G_r = ctext("定向功率密度") / ctext("同向功率密度") = frac(A_("sphere"), A_("ant")) = frac(4pi R^2, A_("ant")) ≈ frac(4pi R^2, θ_("azi") θ_("ele")) = frac(4pi R^2, (R λ) / b (R λ) / h) = frac(4pi A, λ^2)
+  G_r = ctext("定向功率密度") / ctext("全向功率密度") = frac(A_("sphere"), A_("ant")) = frac(4pi R^2, A_("ant")) ≈ frac(4pi R^2, R^2 θ_("azi") θ_("ele")) = frac(4pi R^2, (R λ) / b ⋅ (R λ) / h) = frac(4pi A, λ^2)
 $
+
+其中，$A_"sphere" = 4 π R^2$为以雷达为球心、$R$为半径的球面面积，$A_"ant"$为该球面被主波束截取的面积；$θ_"azi"$、$θ_"ele"$为方位、俯仰面内的半功率波束宽度，近似有$θ_"azi" ≈ λ \/ b$、$θ_"ele" ≈ λ \/ h$（$b$、$h$为天线孔径在对应方向的尺寸），从而$A = b h$为天线有效面积。
 
 #let data = csv("data/radar-target.csv")
 #figure(
@@ -90,7 +92,7 @@ $
   "mix" = 1 / 2 [cos(a - b) t - cos(a + b) t]
 $
 
-其中，$b-a$称为拍频（beat frequency）又称差频，指两个频率相近但不同的声波的干涉，所得到的干涉信号的频率是原先两个声波的频率之差的绝对值。雷达中，拍频通常由 Doppler 效应产生，是传输频率（transmission frequency，TF）和接收频率（reception frequency，RF）之间的差值。
+其中，$b-a$称为拍频（beat frequency）又称差频，指两个频率相近但不同的振荡的干涉，所得到的干涉信号的频率是原先两个振荡频率之差的绝对值。雷达中，拍频通常由 Doppler 效应产生，是传输频率（transmission frequency，TF）和接收频率（reception frequency，RF）之间的差值。
 
 === 调频
 

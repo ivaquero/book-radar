@@ -1,5 +1,5 @@
 #import "lib/lib.typ": *
-#show: chapter-style.with(title: "信号处理2", info: info)
+#show: chapter-style.with(title: "信号处理：预处理与特征提取", info: info)
 
 = 滤波器特性
 
@@ -187,7 +187,7 @@ def hampel(x, k, n_sigma=3):
 + 对于每个数据点，计算信号是否高于阈值（真/假）。
 + 查找特征
 
-== 插值
+== 插值 <interp>
 
 当找到曲线穿过给定阈值的点时，我们可能需要比数据中更高的精度。为此，我们可以通过插值找到记录样本之间的数据点。
 

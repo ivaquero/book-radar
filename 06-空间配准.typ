@@ -112,7 +112,7 @@ $
 *ECEF 与本地 ENU 互转*。以参考点 $(φ_r, λ_r)$ 为原点，目标相对参考点的东、北、上坐标为
 
 $
-  mat(e; n; u) = R_z (λ_r) R_x (90 ° - φ_r) (mat(X; Y; Z) - mat(X_r; Y_r; Z_r))
+  mat(e; n; u) = R_z (λ_r) R_x (90° - φ_r) (mat(X; Y; Z) - mat(X_r; Y_r; Z_r))
 $
 
 #tip[

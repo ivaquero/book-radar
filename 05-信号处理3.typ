@@ -1,5 +1,5 @@
 #import "lib/lib.typ": *
-#show: chapter-style.with(title: "信号处理3", info: info)
+#show: chapter-style.with(title: "信号处理：频谱分析", info: info)
 
 = 频谱信号分析
 
@@ -190,7 +190,7 @@ $
 $
 
 - 第一个 Fourier 分量对应于$e^(j 0) = 1$，因此与信号的偏移量成比例。
-- 最低振荡频率为$1 / (N · T_s)$[Hz]，即$1 / ctext("信号持续时间")$。
+- 最低振荡频率为$1 / (N ⋅ T_s)$[Hz]，即$1 / ctext("信号持续时间")$。
 - 对实值数据，最高独立频率是采样频率的一半，即$1 / (2T_s)$（Nyquist-Shannon 定理）。
 - 对实值数据，Fourier 系数的上半部分必须是下半部分的复共轭。
 
@@ -244,6 +244,14 @@ $
 
 为了降低功率谱中的噪声，可以采用一种称为 Welch 周期图的程序。这样，数据集被分解成多个单独的段，为每个段计算功率谱，然后对得到的功率谱取平均值，返回结果的功率谱密度（PSD）。假设频率分布保持大致恒定，这会增强主要成分并降低随机噪声。代价是降低频率分辨率（@welch）。
 
+```python
+# 分段、加窗、求周期图再平均：nperseg 即每段长度
+f_welch, P_welch = signal.welch(data, fs=rate, nperseg=len(data) // 8)
+_, ax_w = plt.subplots(figsize=(6, 4))
+ax_w.semilogy(f_welch, P_welch)
+ax_w.set(xlabel="Frequency (Hz)", ylabel="PSD (V^2/Hz)")
+```
+
 #figure(
   image("images/spectral-periodo-welch.png", width: 40%),
   caption: "Welch 周期图降噪",
@@ -260,13 +268,13 @@ $ y(n) = sum_(i = 0)^k w_i x(n - i) $ <firf>
 但对于较长的信号，通过 Fourier 变换计算会更有效。其基础由卷积定理给出：
 
 $
-  F{f ∗ g} = cal(F){f} · cal(F){g}
+  cal(F){f ∗ g} = cal(F){f} ⋅ cal(F){g}
 $ <conv>
 
-其中，$cal(F)$表示 Fourier 变换，$∗$表示卷积，$·$表示点积。通过应用逆 Fourier 变换$cal(F)^(−1)$，可得：
+其中，$cal(F)$表示 Fourier 变换，$∗$表示卷积，$⋅$表示逐元相乘。通过应用逆 Fourier 变换$cal(F)^(−1)$，可得：
 
 $
-  f ∗ g = cal(F)^(−1){cal(F){f} · cal(F){g}}
+  f ∗ g = cal(F)^(−1){cal(F){f} ⋅ cal(F){g}}
 $
 
 这是一种非常有效的卷积计算方法。例如，对于 2D 图像，基于 FFT 的卷积实现对于大于$8 × 8 - 12 × 12$的内核大小是最有效的，具体取决于实现类型（线性卷积与循环卷积）。
@@ -280,7 +288,7 @@ $
 由于卷积与互相关密切相关，因此与@conv 有对应关系：
 
 $
-  "Corr"(g, h) ↔ G · H^∗
+  "Corr"(g, h) ↔ G ⋅ H^∗
 $ <corr>
 
 其中，$g, h$是时间函数，$G, H$是相应的 Fourier 变换，$H^∗$是$H$的复共轭。若$h(t)$是实数，则$H(−f) = H^∗(f)$。
